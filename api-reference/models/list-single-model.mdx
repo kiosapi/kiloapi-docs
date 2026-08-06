@@ -1,0 +1,60 @@
+---
+title: List Single Model
+description: Retrieve details of a specific model
+---
+
+# List Single Model
+
+Retrieve information about a specific model available for your API key.
+
+## Request
+
+<Method method="GET" url="https://kiosapi.com/v1/models/{model}" />
+
+### Path Parameters
+
+| Parameter | Required | Description | Example |
+|-----------|----------|-------------|---------|
+| `model` | Yes | Model name | `gemini-2.0-flash` |
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | No* | `Bearer sk-xxx` (OpenAI format) |
+| `x-api-key` | No* | `sk-xxx` (Anthropic format) |
+| `anthropic-version` | No* | `2023-06-01` (Anthropic format) |
+| `x-goog-api-key` | No* | `sk-xxx` (Google format) |
+
+<Info>
+*At least one authentication method is required.
+</Info>
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/models/gemini-2.0-flash \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+```json
+{
+  "id": "gemini-2.0-flash",
+  "object": "model",
+  "created": 1686935002,
+  "owned_by": "google"
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Model name/ID |
+| `object` | string | Always `model` |
+| `created` | integer | Unix timestamp |
+| `owned_by` | string | Model provider |

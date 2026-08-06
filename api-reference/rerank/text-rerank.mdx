@@ -1,0 +1,126 @@
+---
+title: Text Reranking
+description: Reorder documents by relevance to a query
+---
+
+# Text Reranking
+
+The reranking endpoint helps you quickly match relevant documents from a complex document set based on a query.
+
+<Tip>
+Reranking is useful for improving search results: first retrieve candidate documents with vector search, then rerank them for better relevance ordering.
+</Tip>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/rerank" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Rerank model name (e.g. `gte-rerank-v2`) |
+| `query` | string | Yes | Query text to match against documents |
+| `documents` | array | Yes | Array of candidate document strings |
+| `top_n` | integer | No | Number of top documents to return (default: all) |
+| `return_documents` | boolean | No | Whether to return document text (default: `false`) |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/rerank \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gte-rerank-v2",
+    "query": "What is a text reranking model",
+    "documents": [
+      "Text reranking models are widely used in search engines and recommendation systems, ranking candidate texts by text relevance",
+      "Quantum computing is a frontier field in computational science",
+      "The development of pre-trained language models has brought new progress to text reranking models"
+    ],
+    "return_documents": true,
+    "top_n": 5
+  }'
+```
+
+### Python Example
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1/rerank"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer sk-xxx"
+}
+data = {
+    "model": "gte-rerank-v2",
+    "query": "What is a text reranking model",
+    "documents": [
+        "Text reranking models are widely used in search engines",
+        "Quantum computing is a frontier field",
+        "Pre-trained models brought progress to reranking"
+    ],
+    "return_documents": True,
+    "top_n": 5
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+
+for r in result["results"]:
+    print(f"Index: {r['index']}, Score: {r['relevance_score']:.4f}")
+```
+
+## Response
+
+```json
+{
+  "results": [
+    {
+      "document": {
+        "text": "Text reranking models are widely used in search engines and recommendation systems, ranking candidate texts by text relevance"
+      },
+      "index": 0,
+      "relevance_score": 0.9334521178273196
+    },
+    {
+      "document": {
+        "text": "The development of pre-trained language models has brought new progress to text reranking models"
+      },
+      "index": 2,
+      "relevance_score": 0.34100082626411193
+    },
+    {
+      "document": {
+        "text": "Quantum computing is a frontier field in computational science"
+      },
+      "index": 1,
+      "relevance_score": 0.005814161578735119
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 79,
+    "total_tokens": 79
+  }
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `results` | array | Array of ranked results |
+| `results[].document.text` | string | Original document text (if `return_documents: true`) |
+| `results[].index` | integer | Index in the original documents array |
+| `results[].relevance_score` | number | Relevance score (0-1, higher = more relevant) |
+| `usage.prompt_tokens` | integer | Input tokens |
+| `usage.total_tokens` | integer | Total tokens |

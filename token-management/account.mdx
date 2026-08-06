@@ -1,0 +1,56 @@
+---
+title: Query Account Information
+description: Retrieve your account details
+---
+
+# Query Account Information
+
+Retrieve detailed information about your KiloAPI account.
+
+## Request
+
+<Method method="GET" url="https://kiosapi.com/v1/dashboard/billing/account" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/dashboard/billing/account \
+  -H "Authorization: Bearer sk-xxx"
+```
+
+### Python Example
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1/dashboard/billing/account"
+headers = {"Authorization": "Bearer sk-xxx"}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+print(f"Account ID: {data.get('id')}")
+print(f"Balance: ${data.get('balance', 0)}")
+```
+
+## Response
+
+```json
+{
+  "id": "user-xxx",
+  "username": "your-email@example.com",
+  "balance": 10.50,
+  "used": 3.25,
+  "created_at": 1686935002
+}
+```
+
+<Tip>
+For the most up-to-date account information, always check your [Dashboard](https://kiosapi.com) directly.
+</Tip>

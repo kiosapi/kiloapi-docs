@@ -1,0 +1,130 @@
+---
+title: Chat - Image Analysis (Vision)
+description: Analyze images using vision-capable chat models
+---
+
+# Chat - Image Analysis
+
+Send images for analysis using vision-capable models. The model must support image analysis (e.g. `gpt-4o`, `gpt-4-vision-preview`).
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Vision-capable model (e.g. `gpt-4o`) |
+| `messages` | array | Yes | Array of message objects with multimodal content |
+| `messages[].role` | string | Yes | Role: `user` |
+| `messages[].content` | array | Yes | Array of text and image objects |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `stream` | boolean | No | Enable streaming |
+
+### Content Types
+
+The `content` array supports:
+
+| Type | Fields | Description |
+|------|--------|-------------|
+| `text` | `text` | Text prompt |
+| `image_url` | `image_url.url` | Image URL (supports base64 and web URLs) |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What is in this image?"
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "https://example.com/image.png"
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 300
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "What is in this image?"},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": "https://example.com/image.png"}
+                }
+            ]
+        }
+    ],
+    max_tokens=300,
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+Image URLs support both base64 data URIs and web URLs. Base64 format: `data:image/png;base64,iVBOR...`
+</Tip>
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-A7ETdn5hnbTjpw9dtRifjMFZYcdFW",
+  "object": "chat.completion",
+  "created": 1726287309,
+  "model": "gpt-4o-2024-05-13",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "This image shows a cartoon-style portrait of an elderly man...",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 265,
+    "completion_tokens": 46,
+    "total_tokens": 311
+  },
+  "system_fingerprint": "fp_992d1ea92d"
+}
+```

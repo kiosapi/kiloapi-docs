@@ -1,0 +1,64 @@
+---
+title: Introduction
+description: Get started with KiloAPI — an OpenAI-compatible API gateway supporting multiple model formats.
+---
+
+# Introduction
+
+Welcome to **KiloAPI**! KiloAPI is a unified API gateway that provides OpenAI-compatible access to a wide range of large language models. It supports all major API formats — OpenAI, Claude (Anthropic), and Gemini (Google) — through a single endpoint.
+
+## Model Compatibility
+
+KiloAPI exposes an **OpenAI-compatible API**, which means you can use any OpenAI SDK library to make requests. Whether you're using the official `openai` Python/Node SDK, `langchain`, `litellm`, or any other library built for the OpenAI API, it works out of the box.
+
+Simply set the `base_url` to the KiloAPI endpoint and use your KiloAPI API key — no code changes required.
+
+<Tip title="Quick Start">
+  Point any OpenAI SDK to KiloAPI:
+
+  ```bash
+  https://kiosapi.com/v1/
+  ```
+
+  Use your KiloAPI API key as the bearer token. That's it.
+</Tip>
+
+## Chat Endpoint Types
+
+KiloAPI supports four chat completion endpoint formats so you can integrate using whichever SDK or convention you prefer:
+
+| Format | Endpoint Path | Compatible SDK |
+|---|---|---|
+| **OpenAI format** | `/v1/chat/completions` | OpenAI SDK (`openai`) |
+| **OpenAI new format** | `/v1/responses` | OpenAI SDK (`openai` ≥ 1.50) |
+| **Claude native** | `/v1/messages` | Anthropic SDK (`@anthropic-ai/sdk`) |
+| **Gemini native** | `/v1beta/models/{model}:generateContent` | Google GenAI SDK (`@google/genai`) |
+
+Each endpoint accepts requests in the corresponding native format, so you can switch to KiloAPI without modifying your existing application logic.
+
+## Authentication Methods
+
+Each endpoint format expects the API key to be passed differently in the HTTP headers. The table below summarizes the three supported authentication methods:
+
+| Format | Header | Example |
+|---|---|---|
+| **OpenAI** | `Authorization: Bearer sk-xxx` | `Authorization: Bearer sk-kilo-xxxxxxxxxxxx` |
+| **Claude native** | `x-api-key: sk-xxx` + `anthropic-version: 2023-06-01` | `x-api-key: sk-kilo-xxxxxxxxxxxx` |
+| **Gemini native** | `x-goog-api-key: sk-xxx` | `x-goog-api-key: sk-kilo-xxxxxxxxxxxx` |
+
+<Warning title="Don't mix auth methods and endpoints">
+  Make sure you use the correct auth header for the endpoint you're calling. For example, the Claude native endpoint (`/v1/messages`) expects `x-api-key`, **not** `Authorization: Bearer`. Using the wrong header will result in `401 Unauthorized` errors.
+</Warning>
+
+## Official Documentation References
+
+For deeper understanding of each API format, refer to the official provider documentation:
+
+- [OpenAI API Reference](https://platform.openai.com/docs/api-reference)
+- [Claude (Anthropic) API Reference](https://docs.anthropic.com/en/api)
+- [Gemini (Google) API Reference](https://ai.google.dev/api)
+
+## Next Steps
+
+- [Authentication](/authentication) — Learn how to authenticate your API requests.
+- [API Base URL](/api-base-url) — Find the correct base URL for your requests.

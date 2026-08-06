@@ -1,0 +1,114 @@
+---
+title: GPTs
+description: Call OpenAI GPTs via API
+---
+
+# GPTs
+
+You can call all GPTs available on the OpenAI website through the API. Browse available GPTs at [GPTs Hunter](https://www.gptshunter.com/).
+
+## How to Use
+
+To use a GPT, pass its ID as the model name with the prefix `gpt-4-gizmo-`.
+
+### Finding the GPT ID
+
+From a GPT URL like `https://chat.openai.com/g/g-bo0FiWLY7-researchgpt`, the model name would be:
+
+```
+gpt-4-gizmo-g-bo0FiWLY7
+```
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | GPT model name: `gpt-4-gizmo-{gizmo_id}` |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `system` or `user` |
+| `messages[].content` | string | Yes | Message content |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `stream` | boolean | No | Enable streaming |
+| `max_tokens` | number | No | Maximum tokens to generate |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4-gizmo-g-bo0FiWLY7",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is the potential of quantum computing?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4-gizmo-g-bo0FiWLY7",
+    messages=[
+        {"role": "user", "content": "What is the potential of quantum computing?"}
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+If you use the uTools `GPT Friend plugin`, you can paste the entire GPT URL into the plugin's model name field, and it will automatically extract the model name.
+</Tip>
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-89DbGj4xWTyI7ddcPHTqDolMi0MGn",
+  "object": "chat.completion",
+  "created": 1724999207,
+  "model": "gpt-4-gizmo",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing shows tremendous potential..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 30,
+    "completion_tokens": 835,
+    "total_tokens": 865
+  }
+}
+```

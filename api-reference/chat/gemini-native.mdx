@@ -1,0 +1,132 @@
+---
+title: Gemini (Native Format) - File Analysis
+description: Use Gemini models via native Google format
+---
+
+# Gemini (Native Format) - File Analysis
+
+Gemini's native request format uses the Google API structure. The platform supports both snake_case and camelCase parameter names, but **camelCase is recommended** for consistency.
+
+<Tip>
+Use camelCase for all parameters (e.g. `toolConfig` ✅, `tool_config` ❌). Some parameters may not be recognized with snake_case.
+</Tip>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1beta/models/{model}:{action}" />
+
+### Path Parameters
+
+| Parameter | Required | Description | Example |
+|-----------|----------|-------------|---------|
+| `model` | Yes | Model name | `gemini-2.5-flash` |
+| `action` | Yes | Action type | `generateContent` or `streamGenerateContent?alt=sse` |
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `x-goog-api-key` | No* | `sk-xxx` (or use `Authorization: Bearer sk-xxx`) |
+
+<Info>
+You can authenticate with either `x-goog-api-key` header or `Authorization: Bearer` header.
+</Info>
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `contents` | array | Yes | Array of content objects |
+| `contents[].role` | string | Yes | Role: `user` or `model` |
+| `contents[].parts` | array | Yes | Array of part objects |
+| `contents[].parts[].text` | string | No | Text content |
+
+### Example Request - Non-streaming
+
+```bash
+curl -X POST "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: sk-xxx" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {"text": "How are you?"}
+        ]
+      }
+    ]
+  }'
+```
+
+### Example Request - Streaming
+
+```bash
+curl -X POST "https://kiosapi.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: sk-xxx" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {"text": "How are you?"}
+        ]
+      }
+    ]
+  }'
+```
+
+### Python Example
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent"
+headers = {
+    "Content-Type": "application/json",
+    "x-goog-api-key": "sk-xxx"
+}
+data = {
+    "contents": [
+        {
+            "role": "user",
+            "parts": [{"text": "How are you?"}]
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+print(result["choices"][0]["message"]["content"])
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking! How can I help you today?"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 5,
+    "completion_tokens": 15,
+    "total_tokens": 20
+  }
+}
+```
+
+<Info>
+For full parameter details and usage examples, see the [Gemini official documentation](https://ai.google.dev/models/gemini).
+</Info>

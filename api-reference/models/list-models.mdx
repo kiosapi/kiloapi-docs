@@ -1,0 +1,71 @@
+---
+title: List Available Models
+description: List all models available for your API key
+---
+
+# List Available Models
+
+Retrieve the list of models available for your API key. Different token groups may have access to different models. If a token has "auto-group" enabled, models outside the selected group will also be displayed.
+
+<Info>
+All chat models (including non-OpenAI models) support the OpenAI official library. Request URL and format should follow the OpenAI request style.
+</Info>
+
+## Request
+
+<Method method="GET" url="https://kiosapi.com/v1/models" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | No* | `Bearer sk-xxx` (OpenAI format) |
+| `x-api-key` | No* | `sk-xxx` (Anthropic format) |
+| `anthropic-version` | No* | `2023-06-01` (Anthropic format) |
+| `x-goog-api-key` | No* | `sk-xxx` (Google format) |
+
+<Info>
+*At least one authentication method is required. Choose based on the response format you want.
+</Info>
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json"
+```
+
+## Response
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "gpt-4o",
+      "object": "model",
+      "created": 1686935002,
+      "owned_by": "openai"
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "object": "model",
+      "created": 1686935002,
+      "owned_by": "anthropic"
+    }
+  ]
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `object` | string | Always `list` |
+| `data` | array | Array of model objects |
+| `data[].id` | string | Model name/ID |
+| `data[].object` | string | Always `model` |
+| `data[].created` | integer | Unix timestamp |
+| `data[].owned_by` | string | Model provider |

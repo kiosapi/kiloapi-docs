@@ -1,0 +1,128 @@
+---
+title: OpenAI SDK
+description: Detailed guide to using the official OpenAI SDK with KiloAPI across Python and Node.js.
+---
+
+# Using the OpenAI SDK with KiloAPI
+
+KiloAPI is fully compatible with the official OpenAI SDK. This means you can drop in the libraries you already use, change the base URL, and immediately access every chat model KiloAPI offers — including non-OpenAI models.
+
+## Python SDK
+
+### Installation
+
+```bash
+pip install openai
+```
+
+### Configuration
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+```
+
+<Warning>
+  The `base_url` **must** include the `/v1/` suffix. Omitting it will result in `404 Not Found` errors.
+</Warning>
+
+### Chat completion example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Write a haiku about the ocean."},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+#### Streaming
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+stream = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Tell me a story."}],
+    stream=True,
+)
+
+for chunk in stream:
+    content = chunk.choices[0].delta.content
+    if content:
+        print(content, end="", flush=True)
+```
+
+## Node.js SDK
+
+### Installation
+
+```bash
+npm install openai
+```
+
+### Configuration
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-xxx",
+  basePath: "https://kiosapi.com/v1",
+});
+```
+
+### Chat completion example
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-xxx",
+  basePath: "https://kiosapi.com/v1",
+});
+
+async function main() {
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: "Write a haiku about the ocean." },
+    ],
+  });
+
+  console.log(response.choices[0].message.content);
+}
+
+main();
+```
+
+## Important notes
+
+<Tip>
+  **All chat models on KiloAPI — including non-OpenAI models — support the OpenAI official library.** You don't need a different SDK for Claude, Gemini, or any other model family. Just change the `model` parameter and keep the same client configuration.
+</Tip>
+
+<Warning>
+  **`base_url` suffix requirement (Python):** Always set `base_url` to `https://kiosapi.com/v1/` with the trailing `/v1/`. Setting it to `https://kiosapi.com` or `https://kiosapi.com/v1` (without the trailing slash) may cause request routing failures.
+</Warning>
+
+## Next steps
+
+- [Quickstart](./quickstart) — minimal setup to get going fast.
+- [Concurrency](./concurrency) — scale up to thousands of concurrent requests.
+- [API Reference](/introduction) — full endpoint documentation.

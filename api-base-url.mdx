@@ -1,0 +1,108 @@
+---
+title: API Base URL
+description: The KiloAPI base URL and how to configure it correctly with your API key.
+---
+
+# API Base URL
+
+The KiloAPI base URL is:
+
+```
+https://kiosapi.com/v1/
+```
+
+All API requests should be sent to this address (or the appropriate sub-path for your chosen endpoint format). For example:
+
+| Endpoint | Full URL |
+|---|---|
+| OpenAI chat completions | `https://kiosapi.com/v1/chat/completions` |
+| OpenAI responses | `https://kiosapi.com/v1/responses` |
+| Claude native | `https://kiosapi.com/v1/messages` |
+| Gemini native | `https://kiosapi.com/v1beta/models/{model}:generateContent` |
+
+## Finding Your Current API Address
+
+While the default base URL is `https://kiosapi.com/v1/`, you should always verify the current API address from your dashboard:
+
+1. Log in to [kiosapi.com](https://kiosapi.com).
+2. Navigate to **Dashboard > Console**.
+3. Check the displayed API base URL.
+
+<Tip title="Always check the dashboard">
+  The API address shown in **Dashboard > Console** is the authoritative source. If the address ever changes, the dashboard will reflect the update first.
+</Tip>
+
+## Configuring Your SDK
+
+### OpenAI SDK (Python)
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://kiosapi.com/v1/",
+    api_key="sk-kilo-xxxxxxxxxxxx"
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+### OpenAI SDK (Node.js)
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://kiosapi.com/v1/",
+  apiKey: "sk-kilo-xxxxxxxxxxxx",
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Anthropic SDK (Python)
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://kiosapi.com/v1/",
+    api_key="sk-kilo-xxxxxxxxxxxx"
+)
+
+message = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+<Warning title="Bind the correct API URL and KEY">
+  A very common mistake is mixing up the **base URL** and **API key**. Here's the rule:
+
+  - ✅ **KiloAPI key** → `https://kiosapi.com/v1/`
+  - ❌ KiloAPI key → `https://api.openai.com/v1/` (will fail)
+  - ❌ OpenAI key → `https://kiosapi.com/v1/` (will fail)
+
+  Your KiloAPI key only works with the KiloAPI base URL. Double-check both values in your dashboard before debugging authentication errors.
+</Warning>
+
+## Environment Variable
+
+You can also set the base URL via an environment variable to avoid hardcoding it:
+
+```bash
+# .env
+KILOAPI_BASE_URL=https://kiosapi.com/v1/
+KILOAPI_API_KEY=sk-kilo-xxxxxxxxxxxx
+```
+
+<Info title="Why a separate base URL?">
+  KiloAPI is designed as a drop-in replacement for OpenAI, Claude, and Gemini APIs. By setting the base URL to `kiosapi.com`, you can use any existing OpenAI-compatible SDK without changing your application logic — just swap the URL and key.
+</Info>

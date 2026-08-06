@@ -1,0 +1,144 @@
+---
+title: CC Switch
+description: Configure CC Switch to use KiloAPI as the backend provider for Claude Code.
+---
+
+# CC Switch
+
+[CC Switch](https://github.com/farion1231/cc-switch) is a tool for switching between different API providers for Claude Code. This guide shows you how to configure it to use KiloAPI.
+
+## Prerequisites
+
+- [Claude Code](/tutorials/claude-code) installed and configured
+- A **KiloAPI API key** (starts with `sk-`)
+- **Node.js 18+**
+
+## Installation
+
+Install CC Switch globally:
+
+```bash
+npm install -g cc-switch
+```
+
+Verify the installation:
+
+```bash
+cc-switch --version
+```
+
+## Configuration
+
+### 1. Add KiloAPI as a provider
+
+Create or edit the CC Switch configuration file:
+
+| Platform | Config Path |
+|----------|-------------|
+| Windows | `C:\Users\<username>\.cc-switch\config.json` |
+| macOS | `/Users/<username>/.cc-switch/config.json` |
+| Linux | `/home/<username>/.cc-switch/config.json` |
+
+```json
+{
+  "providers": {
+    "kiloapi": {
+      "name": "KiloAPI",
+      "baseUrl": "https://kiosapi.com",
+      "apiKey": "sk-xxx",
+      "model": "claude-sonnet-4-6",
+      "smallFastModel": "claude-haiku-4-5-20251001",
+      "disableBetas": true
+    }
+  },
+  "default": "kiloapi"
+}
+```
+
+Replace `sk-xxx` with your actual KiloAPI key.
+
+<Info>
+  Set `"baseUrl"` to `https://kiosapi.com` (without `/v1`). Claude Code appends the API path automatically.
+</Info>
+
+### 2. Set environment variables (alternative)
+
+You can also configure CC Switch by setting environment variables directly:
+
+**Windows (PowerShell):**
+
+```powershell
+setx ANTHROPIC_BASE_URL "https://kiosapi.com"
+setx ANTHROPIC_AUTH_TOKEN "sk-xxx"
+```
+
+**macOS / Linux:**
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export ANTHROPIC_BASE_URL="https://kiosapi.com"
+export ANTHROPIC_AUTH_TOKEN="sk-xxx"
+```
+
+## Usage
+
+### Switch to KiloAPI
+
+```bash
+cc-switch use kiloapi
+```
+
+### Switch back to another provider
+
+```bash
+cc-switch use anthropic
+```
+
+### Show current provider
+
+```bash
+cc-switch current
+```
+
+### List available providers
+
+```bash
+cc-switch list
+```
+
+## Verify Your Setup
+
+After switching to KiloAPI, test the configuration:
+
+```bash
+claude "Say hello"
+```
+
+If Claude responds, CC Switch is correctly routing through KiloAPI.
+
+<Tip>
+  Use the **`claude_cc`** token group on KiloAPI for the best pricing when using Claude Code.
+</Tip>
+
+## Troubleshooting
+
+### Provider not found
+
+- Verify the provider name in `cc-switch use <name>` matches a key in `config.json`
+- Check the config file is at the correct path for your platform
+
+### Authentication Error after switching
+
+- Ensure the `apiKey` in the config is correct and starts with `sk-`
+- Verify `baseUrl` is `https://kiosapi.com` (no trailing slash, no `/v1`)
+
+### Invalid Beta Flag
+
+If you see a `400` error about beta flags, ensure `"disableBetas": true` is set in the provider config. This adds `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` to the environment.
+
+## Need Help?
+
+- [Claude Code Setup Guide](/tutorials/claude-code)
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Available Models](../api-reference/models/list-models)

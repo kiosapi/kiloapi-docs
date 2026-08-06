@@ -1,0 +1,129 @@
+---
+title: Chat Completions (General)
+description: Create a chat completion using the OpenAI-compatible format
+---
+
+# Chat Completions (General)
+
+This endpoint supports all chat models on the platform (including non-OpenAI models like Claude, Gemini, etc.) using the standard OpenAI request format.
+
+<Info>
+OpenAI, Claude, Gemini and other chat models all use this endpoint format. For more detailed API usage, please read the [official OpenAI documentation](https://platform.openai.com/docs/api-reference/chat).
+</Info>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Model name (e.g. `gpt-4o`) |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `system`, `user`, or `assistant` |
+| `messages[].content` | string | Yes | Message content |
+| `temperature` | number | No | Sampling temperature (0-2). Higher = more random |
+| `top_p` | number | No | Nucleus sampling. Alternative to temperature |
+| `stream` | boolean | No | Enable streaming output |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `n` | number | No | Number of completions to generate |
+| `presence_penalty` | number | No | -2.0 to 2.0, penalize new tokens |
+| `frequency_penalty` | number | No | -2.0 to 2.0, penalize frequent tokens |
+| `response_format` | object | No | Structured output configuration |
+| `stop` | array | No | Stop sequences |
+| `user` | string | No | End-user identifier |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello world!"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+completion = openai.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "Hello world!"}
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(completion.choices[0].message.content)
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-A1iMgDLzZtUJ9QDpfqDLxKH0zfUnp",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "gpt-4o-2024-05-13",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello there! How can I assist you today?",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 10,
+    "total_tokens": 19
+  },
+  "system_fingerprint": "fp_157b3831f5"
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique completion ID |
+| `object` | string | Always `chat.completion` |
+| `created` | integer | Unix timestamp |
+| `model` | string | Model used |
+| `choices` | array | Array of completion choices |
+| `choices[].index` | integer | Choice index |
+| `choices[].message.role` | string | Always `assistant` |
+| `choices[].message.content` | string | Generated response |
+| `choices[].finish_reason` | string | `stop`, `length`, `tool_calls` |
+| `usage.prompt_tokens` | integer | Input tokens |
+| `usage.completion_tokens` | integer | Output tokens |
+| `usage.total_tokens` | integer | Total tokens |

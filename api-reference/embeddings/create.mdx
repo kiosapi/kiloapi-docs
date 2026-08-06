@@ -1,0 +1,93 @@
+---
+title: Create Embeddings
+description: Generate vector embeddings from text
+---
+
+# Create Embeddings
+
+Generate vector embeddings from text input. Useful for semantic search, clustering, and recommendation systems.
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/embeddings" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Embedding model name (e.g. `text-embedding-3-large`) |
+| `input` | string/array | Yes | Text to embed (string or array of strings). Max 8192 tokens per input. |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/embeddings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "text-embedding-3-large",
+    "input": "The weather is beautiful today"
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.embeddings.create(
+    model="text-embedding-3-large",
+    input="The weather is beautiful today"
+)
+
+print(response.data[0].embedding[:5])  # First 5 dimensions
+```
+
+## Response
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "index": 0,
+      "embedding": [
+        -0.022425562,
+        -0.010263717,
+        0.022136442,
+        0.015323295,
+        -0.0013466021
+      ]
+    }
+  ],
+  "model": "text-embedding-3-large",
+  "usage": {
+    "prompt_tokens": 16,
+    "total_tokens": 16
+  }
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `object` | string | Always `list` |
+| `data` | array | Array of embedding objects |
+| `data[].object` | string | Always `embedding` |
+| `data[].index` | integer | Index of the embedding |
+| `data[].embedding` | array | Vector array (floats) |
+| `model` | string | Model used |
+| `usage.prompt_tokens` | integer | Input tokens |
+| `usage.total_tokens` | integer | Total tokens |

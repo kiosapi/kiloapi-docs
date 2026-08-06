@@ -1,0 +1,117 @@
+---
+title: Authentication
+description: How to authenticate API requests to KiloAPI using OpenAI, Claude, or Gemini header formats.
+---
+
+# Authentication
+
+All API requests to KiloAPI require an **API key** passed in the HTTP header. The exact header you use depends on which endpoint format you're calling.
+
+## API Key
+
+Your KiloAPI API key starts with `sk-` and looks like:
+
+```
+sk-kilo-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Treat your API key as a secret — do not expose it in client-side code, public repositories, or logs.
+
+## Authentication Formats
+
+### 1. OpenAI Format
+
+Use this when calling the OpenAI-compatible endpoints (`/v1/chat/completions`, `/v1/responses`):
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-kilo-xxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```
+
+| Header | Value |
+|---|---|
+| `Authorization` | `Bearer sk-kilo-xxxxxxxxxxxx` |
+| `Content-Type` | `application/json` |
+
+<Tip>
+  This is the most common format. All OpenAI SDK libraries send the key automatically when you set `api_key`.
+</Tip>
+
+### 2. Claude (Anthropic) Native Format
+
+Use this when calling the Claude-native endpoint (`/v1/messages`):
+
+```bash
+curl https://kiosapi.com/v1/messages \
+  -H "x-api-key: sk-kilo-xxxxxxxxxxxx" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 1024,
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```
+
+| Header | Value |
+|---|---|
+| `x-api-key` | `sk-kilo-xxxxxxxxxxxx` |
+| `anthropic-version` | `2023-06-01` |
+| `Content-Type` | `application/json` |
+
+<Warning title="anthropic-version is required">
+  When using the Claude native endpoint, the `anthropic-version` header is **mandatory**. Omitting it will cause a `400 Bad Request` error.
+</Warning>
+
+### 3. Gemini (Google) Native Format
+
+Use this when calling the Gemini-native endpoint (`/v1beta/models/{model}:generateContent`):
+
+```bash
+curl "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: sk-kilo-xxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [
+      {"parts": [{"text": "Hello!"}]}
+    ]
+  }'
+```
+
+| Header | Value |
+|---|---|
+| `x-goog-api-key` | `sk-kilo-xxxxxxxxxxxx` |
+| `Content-Type` | `application/json` |
+
+## Getting Your API Key
+
+You can obtain and manage your API key from the KiloAPI dashboard:
+
+1. Log in to [kiosapi.com](https://kiosapi.com).
+2. Navigate to **Dashboard > Token Management**.
+3. Create a new token or copy an existing one.
+
+<Tip title="Keep your key safe">
+  Your API key carries full access to your KiloAPI account. Never share it publicly, commit it to version control, or embed it in client-side applications. Use environment variables or a secrets manager to load it at runtime.
+</Tip>
+
+## Don't Mix Up Your Base URL and Key
+
+<Warning title="Match the correct base URL and API key">
+  KiloAPI keys are **not** interchangeable with keys from OpenAI, Anthropic, or Google. Make sure you:
+
+  - Use a **KiloAPI key** (`sk-kilo-...`) for requests to **`kiosapi.com`**.
+  - Do **not** send your KiloAPI key to `api.openai.com`, `api.anthropic.com`, or `googleapis.com` — it will be rejected.
+  - Do **not** send an OpenAI/Anthropic/Google key to `kiosapi.com` — it will also be rejected.
+
+  Mixing up the base URL and key is the most common cause of `401 Unauthorized` errors.
+</Warning>

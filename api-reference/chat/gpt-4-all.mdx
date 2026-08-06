@@ -1,0 +1,85 @@
+---
+title: Chat - gpt-4-all File Analysis
+description: Analyze files and images with gpt-4-all model
+---
+
+# Chat - gpt-4-all File Analysis
+
+`gpt-4-all` supports image analysis, file analysis, and web browsing capabilities (based on gpt-4 model core).
+
+## Features
+
+- **Image Analysis**: Pass an image URL directly in `content` to analyze it
+- **File Analysis**: Pass a file URL directly in `content` with format: `file_url + space + question`
+- **Web Browsing**: Built-in web search capability
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | `gpt-4-all` |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `system` or `user` |
+| `messages[].content` | string | Yes | Question (can include file URL + space + question) |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `stream` | boolean | No | Enable streaming |
+| `max_tokens` | number | No | Maximum tokens to generate |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4-all",
+    "messages": [
+      {
+        "role": "user",
+        "content": "https://example.com/api-doc.pdf What is the API for adding a domain?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4-all",
+    messages=[
+        {
+            "role": "user",
+            "content": "https://example.com/api-doc.pdf What is the API for adding a domain?"
+        }
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+## Response
+
+Same format as the general chat completions response.

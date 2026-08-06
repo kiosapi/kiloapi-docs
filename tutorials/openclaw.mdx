@@ -1,0 +1,123 @@
+---
+title: OpenClaw
+description: Configure OpenClaw CLI to use KiloAPI as the backend provider.
+---
+
+# OpenClaw
+
+[OpenClaw](https://github.com/openclaw/openclaw) is an open-source CLI coding agent that supports multiple LLM providers. This guide shows you how to configure it to use KiloAPI.
+
+## Prerequisites
+
+- **Node.js 18+** or **Bun**
+- A **KiloAPI API key** (starts with `sk-`)
+
+## Installation
+
+Install OpenClaw globally:
+
+```bash
+npm install -g openclaw
+```
+
+Or with Bun:
+
+```bash
+bun install -g openclaw
+```
+
+Verify the installation:
+
+```bash
+openclaw --version
+```
+
+## Configuration
+
+### 1. Set environment variables
+
+OpenClaw reads the API key and base URL from environment variables.
+
+**Windows (PowerShell):**
+
+```powershell
+setx OPENAI_API_KEY "sk-xxx"
+setx OPENAI_BASE_URL "https://kiosapi.com/v1"
+```
+
+**macOS / Linux:**
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://kiosapi.com/v1"
+```
+
+Reload your shell:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### 2. Config file
+
+Create or edit `~/.openclaw/config.json`:
+
+```json
+{
+  "provider": "openai",
+  "apiBase": "https://kiosapi.com/v1",
+  "apiKey": "sk-xxx",
+  "model": "gpt-4o"
+}
+```
+
+Replace `sk-xxx` with your actual KiloAPI key.
+
+<Tip>
+  You can use any OpenAI-compatible model available on KiloAPI. Check the [models list](../api-reference/models/list-models) for available options.
+</Tip>
+
+## Usage
+
+### Interactive mode
+
+```bash
+openclaw
+```
+
+### Direct question
+
+```bash
+openclaw "Create a React component for a todo list"
+```
+
+### Specify a model
+
+```bash
+openclaw --model claude-sonnet-4-6 "Refactor this function"
+```
+
+## Troubleshooting
+
+### Authentication Error
+
+- Verify your API key is set correctly and starts with `sk-`
+- Ensure `apiBase` in the config file matches the environment variable
+
+### Connection Error
+
+- Confirm the base URL is `https://kiosapi.com/v1` (with `/v1`)
+- Check your network and firewall settings
+
+## Verify Your Setup
+
+```bash
+openclaw "Say hello"
+```
+
+## Need Help?
+
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Available Models](../api-reference/models/list-models)

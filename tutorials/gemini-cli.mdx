@@ -1,0 +1,179 @@
+---
+title: Gemini CLI
+description: Set up Google's Gemini CLI to use KiloAPI as the backend provider.
+---
+
+# Gemini CLI
+
+[Gemini CLI](https://github.com/google-gemini/gemini-cli) is Google's official command-line interface for interacting with Gemini models. This guide shows you how to configure it to use KiloAPI.
+
+## Prerequisites
+
+- **Node.js 18+** — check with `node --version`
+- A **KiloAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
+
+## Installation
+
+Install Gemini CLI globally via npm:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+Verify the installation:
+
+```bash
+gemini --version
+```
+
+## Get Your API Key
+
+1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+2. Navigate to **Token Management**
+3. Create or copy an existing API key (starts with `sk-`)
+
+## Configuration
+
+### 1. Set the base URL
+
+Create `~/.gemini/.env`:
+
+```bash
+GOOGLE_GEMINI_BASE_URL=https://kiosapi.com/
+```
+
+<Info>
+  The base URL must end with a trailing slash `/`. Gemini CLI appends the API path after it.
+</Info>
+
+### 2. Configure settings
+
+Create `~/.gemini/settings.json`:
+
+```json
+{
+  "auth": {
+    "selectedType": "api-key"
+  },
+  "model": "gemini-2.5-pro",
+  "models": {
+    "gemini-2.5-pro": {
+      "name": "Gemini 2.5 Pro",
+      "base_url": "https://kiosapi.com/"
+    },
+    "gemini-2.5-flash": {
+      "name": "Gemini 2.5 Flash",
+      "base_url": "https://kiosapi.com/"
+    },
+    "gemini-2.5-flash-lite": {
+      "name": "Gemini 2.5 Flash Lite",
+      "base_url": "https://kiosapi.com/"
+    }
+  }
+}
+```
+
+| Setting | Description |
+|---------|-------------|
+| `auth.selectedType` | Authentication method — set to `api-key` for KiloAPI |
+| `model` | Default model to use |
+| `models` | Model definitions with display names and base URLs |
+
+### 3. Start Gemini CLI
+
+Run the following command in your terminal:
+
+```bash
+gemini
+```
+
+On first launch, Gemini CLI will prompt you to select an authentication method:
+
+1. Select **API Key**
+2. Enter your KiloAPI key (`sk-xxx`)
+3. Press Enter to confirm
+
+<Warning>
+  Do **not** select "Google Login" — this will attempt to authenticate with Google's servers directly and will not work with KiloAPI. Always choose **API Key**.
+</Warning>
+
+## Usage
+
+### Interactive mode
+
+```bash
+gemini
+```
+
+This opens an interactive REPL where you can chat with Gemini, ask it to read files, and perform tasks.
+
+### Direct question
+
+```bash
+gemini "What is the capital of France?"
+```
+
+### With a file context
+
+```bash
+gemini "Explain this code" < main.py
+```
+
+## Switching Models
+
+Change the default model in `~/.gemini/settings.json`:
+
+```json
+{
+  "model": "gemini-2.5-flash"
+}
+```
+
+Or specify a model per-session:
+
+```bash
+gemini --model gemini-2.5-flash "Summarize this article"
+```
+
+## Available Models
+
+| Model ID | Description |
+|----------|-------------|
+| `gemini-2.5-pro` | Most capable Gemini model for complex reasoning |
+| `gemini-2.5-flash` | Fast and cost-effective for everyday tasks |
+| `gemini-2.5-flash-lite` | Ultra-fast lightweight model |
+
+<Tip>
+  Check the [KiloAPI pricing page](https://kiosapi.com/pricing) for the full list of available Gemini models and their costs.
+</Tip>
+
+## Troubleshooting
+
+### Authentication Failed
+
+- Ensure you selected **API Key** (not Google Login) during setup
+- Verify your API key is correct and starts with `sk-`
+- Re-run `gemini` and re-select the auth method
+
+### Connection Error
+
+- Check that `GOOGLE_GEMINI_BASE_URL` in `~/.gemini/.env` is `https://kiosapi.com/` (with trailing slash)
+- Ensure `base_url` in `settings.json` also has the trailing slash
+- Verify your network connection
+
+### Model Not Found
+
+- Check the model ID matches exactly (e.g., `gemini-2.5-pro`, not `gemini-pro`)
+- Confirm the model is available on KiloAPI by checking the [models list](../api-reference/models/list-models)
+
+## Verify Your Setup
+
+```bash
+gemini "Say hello"
+```
+
+## Need Help?
+
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Token Management Guide](/token-management/usage)
+- [Available Models](../api-reference/models/list-models)

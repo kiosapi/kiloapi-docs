@@ -1,0 +1,72 @@
+---
+title: Query Token Usage
+description: Check total token usage for your API key
+---
+
+# Query Token Usage
+
+Query the total usage of your API token. Supports date range filtering.
+
+## Request
+
+<Method method="GET" url="https://kiosapi.com/v1/dashboard/billing/usage" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `start_date` | string | No | Start timestamp (milliseconds) |
+| `end_date` | string | No | End timestamp (milliseconds) |
+
+### Example Request
+
+```bash
+curl "https://kiosapi.com/v1/dashboard/billing/usage?start_date=1716149437000&end_date=1746517437000" \
+  -H "Authorization: Bearer sk-xxx"
+```
+
+### Python Example
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1/dashboard/billing/usage"
+headers = {"Authorization": "Bearer sk-xxx"}
+params = {
+    "start_date": "1716149437000",
+    "end_date": "1746517437000"
+}
+
+response = requests.get(url, headers=headers, params=params)
+data = response.json()
+
+# total_usage / 100 = actual usage in USD
+actual_usage = data["total_usage"] / 100
+print(f"Total usage: ${actual_usage:.2f}")
+```
+
+## Response
+
+```json
+{
+  "object": "list",
+  "total_usage": 695.9646
+}
+```
+
+<Info>
+`total_usage / 100` = actual usage amount. For example, `695.9646 / 100 = $6.96`.
+</Info>
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `object` | string | Always `list` |
+| `total_usage` | number | Total usage (divide by 100 for actual amount) |

@@ -1,0 +1,105 @@
+---
+title: Image Moderation
+description: Check image content for NSFW/policy violations
+---
+
+# Image Moderation
+
+Check if image content is NSFW or violates content policies.
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/moderations" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | `gi-image-moderation` |
+| `input` | array | Yes | Array of image objects |
+| `input[].type` | string | Yes | Must be `image_url` |
+| `input[].image_url.url` | string | Yes | Image URL or base64 |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/moderations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gi-image-moderation",
+    "input": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "https://example.com/image.png"
+        }
+      }
+    ]
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.moderations.create(
+    model="gi-image-moderation",
+    input=[{
+        "type": "image_url",
+        "image_url": {"url": "https://example.com/image.png"}
+    }]
+)
+
+print(response.results[0].flagged)
+print(response.results[0].categories)
+```
+
+## Response
+
+```json
+{
+  "id": "abfc99e9-392e-44e3-aedd-e63f33079491",
+  "model": "nsfw-classifier",
+  "results": [
+    {
+      "flagged": false,
+      "categories": {
+        "neutral": false,
+        "drawings": true,
+        "sexy": false,
+        "hentai": false,
+        "porn": false
+      },
+      "category_scores": {
+        "neutral": 0.2273,
+        "drawings": 0.9944,
+        "sexy": 0.1233,
+        "hentai": 0.2199,
+        "porn": 0.0557
+      }
+    }
+  ]
+}
+```
+
+### Category Fields
+
+| Category | Description |
+|----------|-------------|
+| `neutral` | No sexual content |
+| `drawings` | Normal image, slight sexual possibility |
+| `sexy` | Sexy/provocative content |
+| `hentai` | Adult anime content |
+| `porn` | Explicit sexual content |

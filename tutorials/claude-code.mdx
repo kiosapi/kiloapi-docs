@@ -1,0 +1,216 @@
+---
+title: Claude Code
+description: Set up Anthropic's Claude Code CLI with KiloAPI to use Claude models in your terminal.
+---
+
+# Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's official agentic coding tool that runs in your terminal. This guide shows you how to configure it to use KiloAPI as the backend provider.
+
+## Prerequisites
+
+- **Node.js 18+** — check with `node --version`
+- A **KiloAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
+
+## Installation
+
+Install Claude Code globally via npm:
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+Verify the installation:
+
+```bash
+claude --version
+```
+
+## Get Your API Key
+
+1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+2. Navigate to **Token Management**
+3. Create or copy an existing API key (starts with `sk-`)
+
+<Tip>
+  Use the **`claude_cc`** token group for Claude Code — it routes to Claude endpoints optimized for coding tasks and is cheaper than the default group.
+</Tip>
+
+## Skip Onboarding
+
+After installing, skip the interactive onboarding wizard by editing `~/.claude.json`:
+
+```json
+{
+  "hasCompletedOnboarding": true
+}
+```
+
+This prevents Claude Code from prompting you to sign in with an Anthropic account.
+
+## Project Configuration
+
+Create a `.claude/settings.json` file in your project root to inject environment variables:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://kiosapi.com",
+    "ANTHROPIC_AUTH_TOKEN": "sk-xxx",
+    "ANTHROPIC_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+  }
+}
+```
+
+Replace `sk-xxx` with your actual KiloAPI key.
+
+<Info>
+  The `ANTHROPIC_BASE_URL` should be `https://kiosapi.com` (without `/v1`). Claude Code appends the API path automatically.
+</Info>
+
+## Global Configuration
+
+You can also set these environment variables globally so Claude Code works in any directory.
+
+### Windows (PowerShell)
+
+```powershell
+setx ANTHROPIC_BASE_URL "https://kiosapi.com"
+setx ANTHROPIC_AUTH_TOKEN "sk-xxx"
+setx ANTHROPIC_MODEL "claude-sonnet-4-6"
+setx ANTHROPIC_SMALL_FAST_MODEL "claude-haiku-4-5-20251001"
+setx CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS "1"
+```
+
+### macOS / Linux
+
+Add the following to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export ANTHROPIC_BASE_URL="https://kiosapi.com"
+export ANTHROPIC_AUTH_TOKEN="sk-xxx"
+export ANTHROPIC_MODEL="claude-sonnet-4-6"
+export ANTHROPIC_SMALL_FAST_MODEL="claude-haiku-4-5-20251001"
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="1"
+```
+
+Then reload your shell:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### Global config file paths
+
+| Platform | Path |
+|----------|------|
+| Windows | `C:\Users\<username>\.claude.json` |
+| macOS   | `/Users/<username>/.claude.json` |
+| Linux   | `/home/<username>/.claude.json` |
+
+## Usage
+
+Navigate to your project directory and launch Claude Code:
+
+```bash
+claude
+```
+
+This opens an interactive session where you can ask Claude to read, write, and modify code.
+
+## Best Practices
+
+### CLAUDE.md
+
+Create a `CLAUDE.md` file in your project root to give Claude persistent context about your codebase, conventions, and common commands. Claude Code reads this file automatically on startup.
+
+### File Permissions
+
+Claude Code will ask for permission before reading or writing files. You can pre-approve directories by adding them to `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["Read(*)", "Write(src/**)", "Edit(src/**)"]
+  }
+}
+```
+
+### Context Management
+
+Long sessions can consume a lot of context. Use these slash commands to manage it:
+
+| Command | Description |
+|---------|-------------|
+| `/clear` | Clears the entire conversation history |
+| `/compact` | Summarizes and compresses the conversation to save context |
+
+## Switching Models
+
+Change the default model globally:
+
+```bash
+claude config set --global env '{"ANTHROPIC_MODEL": "claude-opus-4-6"}'
+```
+
+Or switch to a lighter model for faster responses:
+
+```bash
+claude config set --global env '{"ANTHROPIC_MODEL": "claude-haiku-4-5-20251001"}'
+```
+
+## Troubleshooting
+
+### 400 Bad Request / Invalid Beta Flag
+
+If you see an error like `Invalid beta flag` or a `400` status code:
+
+```
+Error: Invalid beta flag: claude-3-5-sonnet-20241022
+```
+
+Add this environment variable to your configuration:
+
+```json
+"CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+```
+
+This disables experimental beta headers that KiloAPI may not support.
+
+### Length / Max Output Token Error
+
+If you get an error about output length or max tokens exceeded:
+
+```
+Error: output length exceeded
+```
+
+Add this to your `.claude/settings.json` env block:
+
+```json
+"CLAUDE_CODE_MAX_OUTPUT_TOKENS": "32000"
+```
+
+### Connection Refused / 401 Unauthorized
+
+- Verify your API key is correct and starts with `sk-`
+- Ensure `ANTHROPIC_BASE_URL` is set to `https://kiosapi.com` (no trailing slash, no `/v1`)
+- Check that your token group supports Claude models (use `claude_cc`)
+
+## Verify Your Setup
+
+Run a simple test:
+
+```bash
+claude "Say hello"
+```
+
+If Claude responds, your configuration is working correctly.
+
+## Need Help?
+
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Token Management Guide](/token-management/usage)
+- [Available Models](../api-reference/models/list-models)

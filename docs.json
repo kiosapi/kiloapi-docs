@@ -1,0 +1,156 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "KiloAPI",
+  "colors": {
+    "primary": "#6366f1",
+    "light": "#818cf8",
+    "dark": "#4f46e5"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "introduction",
+              "authentication",
+              "api-base-url"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "getting-started/quickstart",
+              "getting-started/openai-sdk",
+              "getting-started/concurrency"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Model Information",
+            "pages": [
+              "api-reference/models/list-models",
+              "api-reference/models/list-single-model"
+            ]
+          },
+          {
+            "group": "Chat Models",
+            "pages": [
+              "api-reference/chat/general",
+              "api-reference/chat/vision",
+              "api-reference/chat/function-calling",
+              "api-reference/chat/o1-o3",
+              "api-reference/chat/gpt-4o-all",
+              "api-reference/chat/gpt-4-all",
+              "api-reference/chat/completions",
+              "api-reference/chat/claude-openai",
+              "api-reference/chat/claude-native",
+              "api-reference/chat/gemini-openai",
+              "api-reference/chat/gemini-native",
+              "api-reference/chat/gpts"
+            ]
+          },
+          {
+            "group": "Content Moderation",
+            "pages": [
+              "api-reference/moderation/text",
+              "api-reference/moderation/image"
+            ]
+          },
+          {
+            "group": "Embeddings & Rerank",
+            "pages": [
+              "api-reference/embeddings/create",
+              "api-reference/rerank/text-rerank"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tutorials",
+        "groups": [
+          {
+            "group": "Tutorials",
+            "pages": [
+              "tutorials/claude-code",
+              "tutorials/codex",
+              "tutorials/gemini-cli",
+              "tutorials/openclaw",
+              "tutorials/opencode",
+              "tutorials/trae",
+              "tutorials/cc-switch"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Token Management",
+        "groups": [
+          {
+            "group": "Token Management",
+            "pages": [
+              "token-management/usage",
+              "token-management/quota",
+              "token-management/account"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Dashboard",
+          "href": "https://kiosapi.com",
+          "icon": "gauge"
+        },
+        {
+          "anchor": "Pricing",
+          "href": "https://kiosapi.com/pricing",
+          "icon": "credit-card"
+        },
+        {
+          "anchor": "Models",
+          "href": "https://kiosapi.com/pricing",
+          "icon": "brain"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/kiosapi",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Pricing",
+        "href": "https://kiosapi.com/pricing"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://kiosapi.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/kiosapi",
+      "website": "https://kiosapi.com"
+    }
+  }
+}

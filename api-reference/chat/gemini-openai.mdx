@@ -1,0 +1,200 @@
+---
+title: Gemini (OpenAI Format) - File Analysis
+description: Use Gemini models via OpenAI format with multi-file support
+---
+
+# Gemini (OpenAI Format) - File Analysis
+
+Gemini models support OpenAI request format with extended file analysis capabilities. Supports PDFs, images, audio, and video files.
+
+## Supported File Types
+
+| Extension | MIME Type |
+|-----------|-----------|
+| `.pdf` | `application/pdf` |
+| `.mp3` | `audio/mp3` |
+| `.mp4` | `video/mp4` |
+| `.wav` | `audio/wav` |
+| `.png` | `image/png` |
+| `.jpg` / `.jpeg` | `image/jpeg` |
+| `.txt` | `text/plain` |
+| `.mov` | `video/mov` |
+| `.mpeg` | `video/mpeg` |
+| `.mpg` | `video/mpg` |
+| `.avi` | `video/avi` |
+| `.wmv` | `video/wmv` |
+| `.flv` | `video/flv` |
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Gemini model name |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `user` or `assistant` |
+| `messages[].content` | string/array | Yes | Text or multimodal content |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `temperature` | number | No | Sampling temperature |
+| `stream` | boolean | No | Enable streaming |
+| `tools` | array | No | Function calling tools |
+| `reasoning_effort` | string | No | Thinking level: `high`, `medium`, `low` |
+| `extra_body` | object | No | Advanced config (thinking_config) |
+| `response_format` | object | No | Structured output config |
+
+### Content Types for File Analysis
+
+| Type | Fields | Description |
+|------|--------|-------------|
+| `text` | `text` | Text prompt |
+| `file` | `file.filename`, `file.file_data` | File (base64 or URL) |
+| `file_url` | `file_url.url` | File URL (supports images and files) |
+| `image_url` | `image_url.url` | Image URL (base64 or web URL) |
+
+<Tip>
+For files over 20MB, use the URL method instead of base64.
+</Tip>
+
+### Dynamic Thinking Models
+
+When model name ends with `thinking-*` (e.g. `gemini-2.5-flash-thinking-2000`), it supports dynamic thinking token limits. The number after `thinking-` sets the max thinking tokens.
+
+### Web Search
+
+Enable web search by either:
+1. Adding `-search` suffix to model name (e.g. `gemini-2.5-flash-search`)
+2. Adding `googleSearch` tool:
+
+```json
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {"name": "googleSearch"}
+    }
+  ]
+}
+```
+
+### Example Request - Chat
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gemini-2.5-pro",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Example Request - File Analysis
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gemini-2.5-pro",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Summarize this document"
+          },
+          {
+            "type": "file",
+            "file": {
+              "filename": "document.pdf",
+              "file_data": "data:application/pdf;base64,JVBERi0xLjQK..."
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 6000,
+    "stream": false
+  }'
+```
+
+### Python Example - Web Search
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gemini-2.5-flash-search",
+    messages=[{"role": "user", "content": "What is today's date?"}],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+### Python Example - Thinking Budget
+
+```python
+response = openai.chat.completions.create(
+    model="gemini-2.5-flash",
+    messages=[{"role": "user", "content": "Complex reasoning task..."}],
+    max_tokens=8000,
+    extra_body={
+        "google": {
+            "thinking_config": {
+                "include_thoughts": True,
+                "thinking_budget": 8192
+            }
+        }
+    }
+)
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! I'm Gemini, a multilingual AI model..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 38,
+    "total_tokens": 50
+  }
+}
+```

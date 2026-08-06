@@ -1,0 +1,106 @@
+---
+title: Text Moderation
+description: Check text content for policy violations
+---
+
+# Text Moderation
+
+Check if text content violates usage policies. For detailed usage, see the [OpenAI Moderation Guide](https://platform.openai.com/docs/guides/moderation).
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/moderations" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Moderation model name (e.g. `text-moderation-latest`) |
+| `input` | string | Yes | Text content to moderate |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/moderations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "text-moderation-latest",
+    "input": "She is very beautiful, I like..."
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.moderations.create(
+    model="text-moderation-latest",
+    input="She is very beautiful, I like..."
+)
+
+print(response.results[0].flagged)
+```
+
+## Response
+
+```json
+{
+  "id": "modr-970d409ef3bef3b70c73d8232df86e7d",
+  "model": "text-moderation-latest",
+  "results": [
+    {
+      "flagged": true,
+      "categories": {
+        "sexual": false,
+        "sexual/minors": false,
+        "harassment": false,
+        "harassment/threatening": false,
+        "hate": false,
+        "hate/threatening": false,
+        "illicit": false,
+        "illicit/violent": false,
+        "self-harm": false,
+        "self-harm/intent": false,
+        "self-harm/instructions": false,
+        "violence": true,
+        "violence/graphic": false
+      },
+      "category_scores": {
+        "sexual": 0.0000002341,
+        "violence": 0.8599265510,
+        "violence/graphic": 0.3770173639
+      }
+    }
+  ]
+}
+```
+
+### Category Fields
+
+| Category | Description |
+|----------|-------------|
+| `sexual` | Sexual content |
+| `sexual/minors` | Sexual content involving minors |
+| `harassment` | Harassment |
+| `harassment/threatening` | Threatening harassment |
+| `hate` | Hate speech |
+| `hate/threatening` | Threatening hate speech |
+| `illicit` | Illicit content |
+| `illicit/violent` | Violent illicit content |
+| `self-harm` | Self-harm |
+| `self-harm/intent` | Self-harm intent |
+| `self-harm/instructions` | Self-harm instructions |
+| `violence` | Violence |
+| `violence/graphic` | Graphic violence |

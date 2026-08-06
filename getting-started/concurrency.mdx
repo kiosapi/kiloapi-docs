@@ -1,0 +1,132 @@
+---
+title: Concurrency
+description: Handle high-throughput batch requests to KiloAPI using Python asyncio and aiohttp.
+---
+
+# High Concurrency Batch Requests
+
+When you need to process large volumes of requests — for batch evaluation, dataset generation, or production workloads — you can take advantage of Python's `asyncio` with `aiohttp` to run thousands of concurrent calls against KiloAPI.
+
+## Installation
+
+```bash
+pip install asyncio aiohttp
+```
+
+<Warning>
+  **`httpx` is less efficient than `aiohttp` for high-concurrency workloads.** For best performance, prefer `aiohttp` with a single shared `ClientSession`.
+</Warning>
+
+## Full example
+
+```python
+import asyncio
+import aiohttp
+import json
+
+# ---- Configuration ----
+API_KEY = "sk-xxx"
+BASE_URL = "https://kiosapi.com/v1/chat/completions"
+MODEL = "gpt-4o-mini"
+MAX_CONCURRENCY = 2000  # concurrent in-flight requests
+
+
+async def create_completion(session, prompt):
+    """Send a single chat completion request."""
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "user", "content": prompt},
+        ],
+    }
+
+    async with session.post(BASE_URL, headers=headers, json=payload) as resp:
+        data = await resp.json()
+        return data["choices"][0]["message"]["content"]
+
+
+async def main():
+    # Shared session — reuse across all requests for connection pooling
+    connector = aiohttp.TCPConnector(limit=MAX_CONCURRENCY)
+    timeout = aiohttp.ClientTimeout(total=120)
+
+    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+        semaphore = asyncio.Semaphore(MAX_CONCURRENCY)
+
+        async def bounded_completion(prompt):
+            async with semaphore:
+                return await create_completion(session, prompt)
+
+        # Example: continuously process a stream of prompts
+        while True:
+            # Replace this with your actual prompt source
+            prompts = generate_prompts()  # e.g. read from a queue, file, DB
+            if not prompts:
+                break
+
+            tasks = [bounded_completion(p) for p in prompts]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for result in results:
+                if isinstance(result, Exception):
+                    print(f"Error: {result}")
+                else:
+                    print(result)
+
+
+def generate_prompts():
+    """Yield the next batch of prompts. Replace with your logic."""
+    # Example: read from a file, database, or message queue
+    return ["Summarize this article: ..."]
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Key design points
+
+- **Single shared `ClientSession`** — create one `aiohttp.ClientSession` and reuse it for all requests. This enables HTTP connection pooling and dramatically reduces overhead.
+- **`Semaphore` for concurrency control** — caps the number of in-flight requests to `MAX_CONCURRENCY`, preventing resource exhaustion.
+- **`while True` loop** — continuously pulls the next batch of prompts until your source is exhausted. Replace `generate_prompts()` with your own logic (file reader, DB cursor, message queue, etc.).
+
+## Limits and best practices
+
+<Warning>
+  **Do not exceed 5,000 concurrent requests in a single script.** Beyond this point, Python's single-threaded event loop and OS socket limits become bottlenecks, leading to timeouts and degraded throughput.
+</Warning>
+
+<Tip>
+  If you need more than 5,000 concurrent requests, **run multiple scripts in parallel** instead of increasing the concurrency limit of a single process. For example, run 3 scripts each with `MAX_CONCURRENCY = 2000` to achieve ~6,000 concurrent requests across separate processes.
+</Tip>
+
+| Approach | Max concurrent (per process) | Recommendation |
+| --- | --- | --- |
+| `aiohttp` + `asyncio` | up to ~5,000 | ✅ Best performance |
+| `httpx` async | up to ~5,000 | ⚠️ Less efficient, higher overhead |
+| `requests` (sequential) | 1 | ❌ Not suitable for batch |
+
+## Error handling
+
+When running at high concurrency, individual request failures are expected. Always use `return_exceptions=True` with `asyncio.gather` and implement retries with exponential backoff for transient errors (`429`, `500`, `502`, `503`).
+
+```python
+async def create_completion_with_retry(session, prompt, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return await create_completion(session, prompt)
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise
+            await asyncio.sleep(2 ** attempt)  # 1s, 2s, 4s backoff
+```
+
+## Next steps
+
+- [Quickstart](./quickstart) — get started with a single request.
+- [OpenAI SDK](./openai-sdk) — SDK configuration details.
+- [Rate Limits](/token-management/usage) — understand platform-level limits.

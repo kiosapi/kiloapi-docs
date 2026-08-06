@@ -1,0 +1,175 @@
+---
+title: Claude (OpenAI Format) - PDF Analysis
+description: Use Claude models via OpenAI format with PDF support
+---
+
+# Claude (OpenAI Format) - PDF Analysis
+
+Claude models support both OpenAI request format and native Anthropic format. When using OpenAI format, it's fully compatible with all OpenAI libraries.
+
+<Tip>
+If you need prompt caching, use the **Claude native format** (see the next page in the sidebar) instead. OpenAI format does not support PDF caching.
+</Tip>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Claude model name (e.g. `claude-sonnet-4-6`) |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `user` or `assistant` |
+| `messages[].content` | string/array | Yes | Text or multimodal content array |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `stream` | boolean | No | Enable streaming |
+| `thinking` | object | No | Enable extended thinking (claude-3-7-sonnet only) |
+| `thinking.type` | string | No | Must be `enabled` |
+| `thinking.budget_tokens` | integer | No | Max thinking tokens (min 1024, must be < max_tokens) |
+
+### Content Types for PDF/File Analysis
+
+The `content` array supports:
+
+| Type | Fields | Description |
+|------|--------|-------------|
+| `text` | `text` | Text prompt |
+| `file` | `file.filename`, `file.file_data` | PDF file (URL or base64) |
+| `file_url` | `file_url.url` | File URL (supports images and PDFs) |
+| `image_url` | `image_url.url` | Image URL (base64 or web URL) |
+
+<Tip>
+For base64, use format: `data:application/pdf;base64,JVBERi0xLjQK...`. Claude recommends base64 for faster results.
+</Tip>
+
+### Example Request - Chat
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Example Request - PDF Analysis
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Summarize this document"
+          },
+          {
+            "type": "file_url",
+            "file_url": {
+              "url": "https://example.com/document.pdf"
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 1000,
+    "stream": false
+  }'
+```
+
+### Python Example - PDF Analysis
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="claude-sonnet-4-6",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Summarize this document"},
+                {
+                    "type": "file",
+                    "file": {
+                        "filename": "document.pdf",
+                        "file_data": "https://example.com/document.pdf"
+                    }
+                }
+            ]
+        }
+    ],
+    max_tokens=1000,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+### Example - Extended Thinking
+
+```python
+response = openai.chat.completions.create(
+    model="claude-3-7-sonnet-20250219",
+    messages=[{"role": "user", "content": "Solve this complex problem..."}],
+    max_tokens=8000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 4000
+    }
+)
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "claude-sonnet-4-6",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! I'm Claude, an AI assistant..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 38,
+    "total_tokens": 50
+  }
+}
+```

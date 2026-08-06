@@ -1,0 +1,124 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "KiloAPI",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#6366f1",
+    "light": "#818cf8",
+    "dark": "#4f46e5",
+    "anchors": {
+      "from": "#6366f1",
+      "to": "#8b5cf6"
+    }
+  },
+  "topbarCtaButton": {
+    "type": "link",
+    "name": "Dashboard",
+    "url": "https://kiosapi.com"
+  },
+  "topbarLinks": [
+    {
+      "name": "Pricing",
+      "url": "https://kiosapi.com/pricing"
+    }
+  ],
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Tutorials",
+      "url": "tutorials"
+    },
+    {
+      "name": "Token Management",
+      "url": "token-management"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Dashboard",
+      "icon": "gauge",
+      "url": "https://kiosapi.com"
+    },
+    {
+      "name": "Pricing",
+      "icon": "credit-card",
+      "url": "https://kiosapi.com/pricing"
+    },
+    {
+      "name": "Models",
+      "icon": "brain",
+      "url": "https://kiosapi.com/pricing"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/kiosapi"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Introduction",
+      "pages": ["introduction", "authentication", "api-base-url"]
+    },
+    {
+      "group": "Getting Started",
+      "pages": ["getting-started/quickstart", "getting-started/openai-sdk", "getting-started/concurrency"]
+    },
+    {
+      "group": "Tutorials",
+      "pages": [
+        "tutorials/claude-code",
+        "tutorials/codex",
+        "tutorials/gemini-cli",
+        "tutorials/openclaw",
+        "tutorials/opencode",
+        "tutorials/trae",
+        "tutorials/cc-switch"
+      ]
+    },
+    {
+      "group": "Model Information",
+      "pages": ["api-reference/models/list-models", "api-reference/models/list-single-model"]
+    },
+    {
+      "group": "Chat Models",
+      "pages": [
+        "api-reference/chat/general",
+        "api-reference/chat/vision",
+        "api-reference/chat/function-calling",
+        "api-reference/chat/o1-o3",
+        "api-reference/chat/gpt-4o-all",
+        "api-reference/chat/gpt-4-all",
+        "api-reference/chat/completions",
+        "api-reference/chat/claude-openai",
+        "api-reference/chat/claude-native",
+        "api-reference/chat/gemini-openai",
+        "api-reference/chat/gemini-native",
+        "api-reference/chat/gpts"
+      ]
+    },
+    {
+      "group": "Content Moderation",
+      "pages": ["api-reference/moderation/text", "api-reference/moderation/image"]
+    },
+    {
+      "group": "Embeddings & Rerank",
+      "pages": ["api-reference/embeddings/create", "api-reference/rerank/text-rerank"]
+    },
+    {
+      "group": "Token Management",
+      "pages": ["token-management/usage", "token-management/quota", "token-management/account"]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/kiosapi",
+    "website": "https://kiosapi.com"
+  }
+}

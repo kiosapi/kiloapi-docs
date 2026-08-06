@@ -1,0 +1,13 @@
+{
+  "name": "kiloapi-docs",
+  "version": "1.0.0",
+  "description": "KiloAPI Documentation - OpenAI-compatible AI Gateway API",
+  "scripts": {
+    "dev": "mintlify dev",
+    "build": "mintlify build",
+    "lint": "mintlify lint"
+  },
+  "devDependencies": {
+    "mintlify": "latest"
+  }
+}

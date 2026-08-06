@@ -1,0 +1,180 @@
+---
+title: Claude (Native Format) - PDF Analysis
+description: Use Claude models via native Anthropic format with caching support
+---
+
+# Claude (Native Format) - PDF Analysis
+
+Claude's native request format supports prompt caching, which can significantly reduce costs for repeated context.
+
+<Tip>
+The native format only lists commonly used parameters. For full parameter details, read the [Claude official documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching).
+</Tip>
+
+## Supported Models
+
+Claude native format supports models with `cld-` or `claude-` prefixes, as well as `kimi-k2-0711-preview`, `qwen3-coder-plus`, and `glm-4.5+`.
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/messages" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `x-api-key` | Yes | `sk-xxx` |
+| `anthropic-version` | Yes | `2023-06-01` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Claude model name |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `user` or `assistant` |
+| `messages[].content` | string/array | Yes | Text or multimodal content |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `top_p` | number | No | Nucleus sampling |
+| `top_k` | integer | No | Top-k sampling |
+| `stream` | boolean | No | Enable streaming |
+| `tools` | object | No | Function calling tools |
+| `thinking` | object | No | Extended thinking config |
+
+### Content Types for PDF/Image Analysis
+
+| Type | Sub-type | Fields | Description |
+|------|----------|--------|-------------|
+| `image` or `document` | base64 | `source.type: "base64"`, `source.data`, `source.media_type` | Base64-encoded file |
+| `image` or `document` | url | `source.type: "url"`, `source.url` | File URL |
+| `text` | - | `text` | Text prompt |
+
+### Cache Control
+
+For files used across multiple messages, add `cache_control` to cache the file:
+
+```json
+{
+  "type": "document",
+  "source": {
+    "type": "base64",
+    "data": "JVBERi0xLjQK...",
+    "media_type": "application/pdf"
+  },
+  "cache_control": {
+    "type": "ephemeral"
+  }
+}
+```
+
+### Example Request - Chat
+
+```bash
+curl https://kiosapi.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: sk-xxx" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Python Example - PDF Analysis with Caching
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(
+    api_key="sk-xxx",
+    base_url="https://kiosapi.com"
+)
+
+response = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1000,
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Summarize this document"
+                },
+                {
+                    "type": "document",
+                    "source": {
+                        "type": "url",
+                        "url": "https://example.com/document.pdf"
+                    },
+                    "cache_control": {"type": "ephemeral"}
+                }
+            ]
+        }
+    ]
+)
+
+print(response.content[0].text)
+```
+
+### Example - Extended Thinking
+
+```python
+response = client.messages.create(
+    model="claude-3-7-sonnet-20250219",
+    max_tokens=8000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 4000
+    },
+    messages=[{"role": "user", "content": "Solve this complex problem..."}]
+)
+```
+
+## Response
+
+```json
+{
+  "id": "msg_014AoBefsejHUjbdRntn7euw",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "Hello! I'm Claude, an AI assistant. How can I help you today?"
+    }
+  ],
+  "model": "claude-sonnet-4-6",
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 12,
+    "output_tokens": 38
+  }
+}
+```
+
+### Response Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Message ID |
+| `type` | string | Always `message` |
+| `role` | string | Always `assistant` |
+| `content` | array | Response content blocks |
+| `content[].type` | string | `text` |
+| `content[].text` | string | Response text |
+| `model` | string | Model used |
+| `stop_reason` | string | `end_turn`, `max_tokens`, `tool_use` |
+| `usage.input_tokens` | integer | Input tokens |
+| `usage.output_tokens` | integer | Output tokens |

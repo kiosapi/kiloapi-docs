@@ -1,0 +1,80 @@
+---
+title: Chat - Completions (Legacy)
+description: Legacy text completions endpoint
+---
+
+# Chat - Completions (Legacy)
+
+The legacy completions endpoint for text completion. This is the older OpenAI format that predates the chat completions API.
+
+<Info>
+For most use cases, prefer the `/v1/chat/completions` endpoint. This endpoint is provided for backward compatibility.
+</Info>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Model name (e.g. `gpt-3.5-turbo-instruct`) |
+| `prompt` | string | Yes | Input text prompt |
+| `temperature` | number | No | Sampling temperature (0-2) |
+| `top_p` | number | No | Nucleus sampling |
+| `stream` | boolean | No | Enable streaming |
+| `max_tokens` | number | No | Maximum tokens to generate |
+| `n` | number | No | Number of completions |
+| `presence_penalty` | number | No | -2.0 to 2.0 |
+| `frequency_penalty` | number | No | -2.0 to 2.0 |
+| `logprobs` | number | No | Return log probabilities of tokens |
+| `user` | string | No | End-user identifier |
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-3.5-turbo-instruct",
+    "prompt": "The weather is very nice today",
+    "temperature": 0.7,
+    "max_tokens": 100,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0
+  }'
+```
+
+## Response
+
+```json
+{
+  "id": "cmpl-A1tJLfyQgj1j2GpvhA6QcMCZKwRtw",
+  "object": "text_completion",
+  "created": 1725014307,
+  "model": "gpt-3.5-turbo-instruct",
+  "choices": [
+    {
+      "text": ", perfect for going out\n\nYes, the weather is very good today, perfect for a trip.",
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6,
+    "completion_tokens": 25,
+    "total_tokens": 31
+  }
+}
+```

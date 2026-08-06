@@ -1,0 +1,106 @@
+---
+title: Chat - o1/o3 Series Models
+description: Use OpenAI o1/o3 reasoning models
+---
+
+# Chat - o1/o3 Series Models
+
+The o1 series models support reasoning capabilities. They use the same `/v1/chat/completions` endpoint but with some differences.
+
+<Tip>
+o1 series models do **not** support streaming output. Always set `stream: false`.
+</Tip>
+
+## Request
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Yes | `Bearer sk-xxx` |
+
+### Request Body
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | Model name: `o1-mini`, `o1-preview`, `o3`, `o3-mini`, etc. |
+| `messages` | array | Yes | Array of message objects |
+| `messages[].role` | string | Yes | Role: `user` (no `system` role supported) |
+| `messages[].content` | string | Yes | Message content |
+| `max_completion_tokens` | number | No | Maximum tokens to generate |
+| `stream` | boolean | No | Must be `false` |
+
+<Warning>
+o1/o3 series models do **not** support the `system` role. Only use `user` and `assistant` roles.
+</Warning>
+
+### Example Request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "o1-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Explain quantum computing in simple terms"
+      }
+    ],
+    "max_completion_tokens": 1688,
+    "stream": false
+  }'
+```
+
+### Python Example
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="o1-mini",
+    messages=[
+        {"role": "user", "content": "Explain quantum computing in simple terms"}
+    ],
+    max_completion_tokens=1688,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-A1iMgDLzZtUJ9QDpfqDLxKH0zfUnp",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "o1-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing is a type of computation...",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 150,
+    "total_tokens": 159
+  },
+  "system_fingerprint": "fp_157b3831f5"
+}
+```

@@ -1,0 +1,21 @@
+# Authentication
+
+All KiloAPI requests require an API key in the HTTP header. The header format depends on which API format you're using:
+
+## OpenAI Format
+```bash
+Authorization: Bearer sk-xxx
+```
+
+## Claude (Anthropic) Native Format
+```bash
+x-api-key: sk-xxx
+anthropic-version: 2023-06-01
+```
+
+## Gemini (Google) Native Format
+```bash
+x-goog-api-key: sk-xxx
+```
+
+Get your API key from the [Dashboard](https://kiosapi.com) → **Token Management** page.

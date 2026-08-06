@@ -1,0 +1,85 @@
+---
+title: Quickstart
+description: Get up and running with KiloAPI in minutes using the OpenAI SDK.
+---
+
+# Quickstart
+
+This guide walks you through sending your first request to the KiloAPI platform using the official OpenAI SDK. KiloAPI is fully OpenAI-compatible, so you can use the libraries you already know.
+
+## Prerequisites
+
+- A KiloAPI account with an API key (starts with `sk-`)
+- Python 3.8+ or Node.js 18+
+
+## Python
+
+### Install the SDK
+
+```bash
+pip install openai
+```
+
+<Info>
+  OpenAI Python SDK version **1.25.0** or higher is required for full KiloAPI compatibility.
+</Info>
+
+### Send your first request
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-xxx",
+    base_url="https://kiosapi.com/v1/",
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello! What can you do?"},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Node.js
+
+### Install the SDK
+
+```bash
+npm install openai
+```
+
+### Send your first request
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-xxx",
+  basePath: "https://kiosapi.com/v1",
+});
+
+async function main() {
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: "Hello! What can you do?" },
+    ],
+  });
+
+  console.log(response.choices[0].message.content);
+}
+
+main();
+```
+
+## Next steps
+
+- [OpenAI SDK guide](./openai-sdk) — deeper dive into SDK configuration and supported models.
+- [Concurrency](./concurrency) — handle high-throughput batch requests with `asyncio` + `aiohttp`.
+- [API Reference](/introduction) — full endpoint documentation.

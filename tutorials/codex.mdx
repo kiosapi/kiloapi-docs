@@ -1,0 +1,178 @@
+---
+title: OpenAI Codex CLI
+description: Configure the OpenAI Codex CLI to use KiloAPI as the backend provider.
+---
+
+# OpenAI Codex CLI
+
+[OpenAI Codex CLI](https://github.com/openai/codex) is a command-line coding agent from OpenAI. This guide walks you through configuring it to work with KiloAPI.
+
+## System Requirements
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **Operating System** | macOS 12+, Ubuntu 20.04+, or Windows 11 (WSL2) | — |
+| **RAM** | 4 GB | 8 GB |
+| **Node.js** | 22+ | Latest LTS |
+| **Disk Space** | 200 MB | 500 MB |
+
+## Installation
+
+Install Codex CLI globally via npm:
+
+```bash
+npm i -g @openai/codex
+```
+
+Or via Homebrew (macOS/Linux):
+
+```bash
+brew install codex
+```
+
+Verify the installation:
+
+```bash
+codex --version
+```
+
+## Get Your API Key
+
+1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+2. Navigate to **Token Management**
+3. Create or copy an existing API key (starts with `sk-`)
+
+## Configuration
+
+### 1. Create the config file
+
+Create `~/.codex/config.toml`:
+
+```toml
+[model_providers.kiloapi]
+name = "KiloAPI"
+base_url = "https://kiosapi.com/v1"
+wire_api = "responses"
+env_key = "KILOAPI_KEY"
+
+[profiles.kiloapi]
+model = "o4-mini"
+model_provider = "kiloapi"
+```
+
+<Info>
+  The `wire_api = "responses"` setting tells Codex to use OpenAI's Responses API format, which KiloAPI supports.
+</Info>
+
+### 2. Set the environment variable
+
+Set your KiloAPI key as the `KILOAPI_KEY` environment variable.
+
+**Windows (PowerShell):**
+
+```powershell
+setx KILOAPI_KEY "sk-xxx"
+```
+
+**macOS / Linux:**
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export KILOAPI_KEY="sk-xxx"
+```
+
+Then reload:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+## Usage
+
+### Interactive mode
+
+```bash
+codex
+```
+
+### Direct question
+
+```bash
+codex "Explain how async/await works in Python"
+```
+
+### Using the KiloAPI profile
+
+```bash
+codex --profile kiloapi "Write a function to reverse a linked list"
+```
+
+## VSCode Plugin
+
+Codex is also available as a [VSCode extension](https://marketplace.visualstudio.com/items?itemName=openai.codex). After installing the extension, configure it to use KiloAPI by setting the same environment variables in your VSCode settings or terminal.
+
+<Warning>
+  The VSCode extension reads environment variables from your shell. Make sure `KILOAPI_KEY` is exported in the shell that launches VSCode, or set it in the integrated terminal.
+</Warning>
+
+## Advanced Configuration
+
+### Non-Interactive CI Mode
+
+For CI/CD pipelines, run Codex in non-interactive mode:
+
+```bash
+codex --quiet --auto-approve "Fix the failing test in tests/auth.test.js"
+```
+
+| Flag | Description |
+|------|-------------|
+| `--quiet` | Suppress interactive prompts |
+| `--auto-approve` | Automatically approve file changes |
+| `--json` | Output results as JSON |
+
+### MCP Servers
+
+Codex supports [Model Context Protocol (MCP)](https://modelcontextprotocol.io) servers for extended tool access. Add MCP servers in `~/.codex/config.toml`:
+
+```toml
+[mcp.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
+
+[mcp.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "ghp_xxx" }
+```
+
+## Troubleshooting
+
+### Authentication Error (401)
+
+- Verify `KILOAPI_KEY` is set correctly: `echo $KILOAPI_KEY`
+- Ensure the key starts with `sk-`
+- Check the `env_key` in your config matches the environment variable name
+
+### Model Not Found
+
+- Verify the model name in your profile is correct
+- Check available models on the [KiloAPI pricing page](https://kiosapi.com/pricing)
+
+### Connection Error
+
+- Ensure `base_url` is `https://kiosapi.com/v1` (with `/v1`)
+- Check your network connection and firewall settings
+
+## Verify Your Setup
+
+```bash
+codex "Say hello"
+```
+
+## Need Help?
+
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Token Management Guide](/token-management/usage)
+- [Available Models](../api-reference/models/list-models)

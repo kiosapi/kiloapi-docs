@@ -1,0 +1,116 @@
+---
+title: OpenCode
+description: Configure OpenCode CLI to use KiloAPI as the backend provider.
+---
+
+# OpenCode
+
+[OpenCode](https://github.com/opencode-ai/opencode) is an AI coding agent for the terminal. This guide shows you how to set it up with KiloAPI.
+
+## Prerequisites
+
+- **Node.js 18+** — check with `node --version`
+- A **KiloAPI API key** (starts with `sk-`)
+
+## Installation
+
+Install OpenCode globally:
+
+```bash
+npm install -g @opencode-ai/opencode
+```
+
+Verify the installation:
+
+```bash
+opencode --version
+```
+
+## Configuration
+
+### 1. Set environment variables
+
+**Windows (PowerShell):**
+
+```powershell
+setx OPENAI_API_KEY "sk-xxx"
+setx OPENAI_BASE_URL "https://kiosapi.com/v1"
+```
+
+**macOS / Linux:**
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://kiosapi.com/v1"
+```
+
+Reload your shell:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### 2. Config file
+
+Create or edit `~/.config/opencode/config.json`:
+
+```json
+{
+  "provider": "openai",
+  "apiBase": "https://kiosapi.com/v1",
+  "apiKey": "sk-xxx",
+  "model": "gpt-4o"
+}
+```
+
+Replace `sk-xxx` with your actual KiloAPI key.
+
+## Usage
+
+### Interactive mode
+
+```bash
+opencode
+```
+
+### Direct question
+
+```bash
+opencode "Write a Python script to parse CSV files"
+```
+
+### Specify a model
+
+```bash
+opencode --model gpt-4o-mini "Explain this error message"
+```
+
+<Tip>
+  OpenCode supports any OpenAI-compatible model on KiloAPI. See the [models list](../api-reference/models/list-models) for available options.
+</Tip>
+
+## Troubleshooting
+
+### Authentication Error
+
+- Verify `OPENAI_API_KEY` is set correctly: `echo $OPENAI_API_KEY`
+- Ensure the key starts with `sk-`
+- Check that `apiBase` in the config file matches the environment variable
+
+### Model Not Found
+
+- Check the model name is valid on the [KiloAPI models page](https://kiosapi.com/pricing)
+- Ensure the model is included in your token group
+
+## Verify Your Setup
+
+```bash
+opencode "Say hello"
+```
+
+## Need Help?
+
+- [KiloAPI Dashboard](https://kiosapi.com)
+- [Available Models](../api-reference/models/list-models)
