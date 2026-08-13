@@ -1,0 +1,216 @@
+---
+title: Claude Code
+description: Siapkan CLI Claude Code dari Anthropic dengan KiosAPI untuk menggunakan model Claude di terminal Anda.
+---
+
+# Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) adalah alat coding agentic resmi Anthropic yang berjalan di terminal. Panduan ini menjelaskan cara mengonfigurasikannya agar menggunakan KiosAPI sebagai penyedia backend.
+
+## Prasyarat
+
+- **Node.js 18+** — periksa dengan `node --version`
+- **Kunci API KiosAPI** (diawali dengan `sk-`) dari [Dashboard](https://kiosapi.com) → **Token Management**
+
+## Instalasi
+
+Instal Claude Code secara global melalui npm:
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+Verifikasi instalasi:
+
+```bash
+claude --version
+```
+
+## Dapatkan Kunci API Anda
+
+1. Masuk ke [Dashboard KiosAPI](https://kiosapi.com)
+2. Buka **Token Management**
+3. Buat atau salin kunci API yang ada (diawali dengan `sk-`)
+
+<Tip>
+  Gunakan grup token **`claude_cc`** untuk Claude Code. Grup ini merutekan ke endpoint Claude yang dioptimalkan untuk tugas coding dan lebih murah daripada grup default.
+</Tip>
+
+## Lewati Onboarding
+
+Setelah instalasi, lewati wizard onboarding interaktif dengan mengedit `~/.claude.json`:
+
+```json
+{
+  "hasCompletedOnboarding": true
+}
+```
+
+Ini mencegah Claude Code meminta Anda masuk dengan akun Anthropic.
+
+## Konfigurasi Proyek
+
+Buat file `.claude/settings.json` di root proyek untuk menyuntikkan variabel lingkungan:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://kiosapi.com",
+    "ANTHROPIC_AUTH_TOKEN": "sk-xxx",
+    "ANTHROPIC_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_SMALL_FAST_MODEL": "claude-haiku-4-5-20251001",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+  }
+}
+```
+
+Ganti `sk-xxx` dengan kunci KiosAPI Anda yang sebenarnya.
+
+<Info>
+  `ANTHROPIC_BASE_URL` harus berupa `https://kiosapi.com` (tanpa `/v1`). Claude Code menambahkan jalur API secara otomatis.
+</Info>
+
+## Konfigurasi Global
+
+Anda juga dapat mengatur variabel lingkungan ini secara global agar Claude Code berfungsi di direktori mana pun.
+
+### Windows (PowerShell)
+
+```powershell
+setx ANTHROPIC_BASE_URL "https://kiosapi.com"
+setx ANTHROPIC_AUTH_TOKEN "sk-xxx"
+setx ANTHROPIC_MODEL "claude-sonnet-4-6"
+setx ANTHROPIC_SMALL_FAST_MODEL "claude-haiku-4-5-20251001"
+setx CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS "1"
+```
+
+### macOS / Linux
+
+Tambahkan berikut ke `~/.bashrc` atau `~/.zshrc`:
+
+```bash
+export ANTHROPIC_BASE_URL="https://kiosapi.com"
+export ANTHROPIC_AUTH_TOKEN="sk-xxx"
+export ANTHROPIC_MODEL="claude-sonnet-4-6"
+export ANTHROPIC_SMALL_FAST_MODEL="claude-haiku-4-5-20251001"
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="1"
+```
+
+Kemudian muat ulang shell Anda:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### Lokasi file konfigurasi global
+
+| Platform | Lokasi |
+|----------|--------|
+| Windows | `C:\Users\<username>\.claude.json` |
+| macOS   | `/Users/<username>/.claude.json` |
+| Linux   | `/home/<username>/.claude.json` |
+
+## Penggunaan
+
+Buka direktori proyek Anda dan jalankan Claude Code:
+
+```bash
+claude
+```
+
+Ini membuka sesi interaktif tempat Anda dapat meminta Claude membaca, menulis, dan mengubah kode.
+
+## Praktik Terbaik
+
+### CLAUDE.md
+
+Buat file `CLAUDE.md` di root proyek untuk memberi Claude konteks permanen tentang codebase, konvensi, dan perintah umum Anda. Claude Code membaca file ini secara otomatis saat dimulai.
+
+### Izin File
+
+Claude Code akan meminta izin sebelum membaca atau menulis file. Anda dapat menyetujui direktori terlebih dahulu dengan menambahkannya ke `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["Read(*)", "Write(src/**)", "Edit(src/**)"]
+  }
+}
+```
+
+### Manajemen Konteks
+
+Sesi panjang dapat menghabiskan banyak konteks. Gunakan perintah slash berikut untuk mengelolanya:
+
+| Perintah | Deskripsi |
+|---------|-------------|
+| `/clear` | Menghapus seluruh riwayat percakapan |
+| `/compact` | Meringkas dan memadatkan percakapan untuk menghemat konteks |
+
+## Mengganti Model
+
+Ubah model default secara global:
+
+```bash
+claude config set --global env '{"ANTHROPIC_MODEL": "claude-opus-4-6"}'
+```
+
+Atau beralih ke model yang lebih ringan untuk respons lebih cepat:
+
+```bash
+claude config set --global env '{"ANTHROPIC_MODEL": "claude-haiku-4-5-20251001"}'
+```
+
+## Pemecahan Masalah
+
+### 400 Bad Request / Flag Beta Tidak Valid
+
+Jika Anda melihat kesalahan seperti `Invalid beta flag` atau status `400`:
+
+```
+Error: Invalid beta flag: claude-3-5-sonnet-20241022
+```
+
+Tambahkan variabel lingkungan ini ke konfigurasi Anda:
+
+```json
+"CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+```
+
+Ini menonaktifkan header beta eksperimental yang mungkin tidak didukung KiosAPI.
+
+### Kesalahan Panjang / Token Output Maksimum
+
+Jika muncul kesalahan tentang panjang output atau batas maksimum token:
+
+```
+Error: output length exceeded
+```
+
+Tambahkan ini ke blok env `.claude/settings.json`:
+
+```json
+"CLAUDE_CODE_MAX_OUTPUT_TOKENS": "32000"
+```
+
+### Koneksi Ditolak / 401 Unauthorized
+
+- Pastikan kunci API benar dan diawali dengan `sk-`
+- Pastikan `ANTHROPIC_BASE_URL` adalah `https://kiosapi.com` (tanpa garis miring akhir dan `/v1`)
+- Pastikan grup token mendukung model Claude (gunakan `claude_cc`)
+
+## Verifikasi Pengaturan
+
+Jalankan pengujian sederhana:
+
+```bash
+claude "Say hello"
+```
+
+Jika Claude merespons, konfigurasi Anda sudah berfungsi dengan benar.
+
+## Butuh Bantuan?
+
+- [Dashboard KiosAPI](https://kiosapi.com)
+- [Panduan Manajemen Token](/token-management/usage)
+- [Model Tersedia](../api-reference/models/list-models)

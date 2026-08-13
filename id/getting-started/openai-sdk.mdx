@@ -1,0 +1,78 @@
+---
+title: OpenAI SDK
+description: Gunakan OpenAI SDK Python atau Node.js dengan KiosAPI.
+---
+
+# OpenAI SDK dengan KiosAPI
+
+KiosAPI menyediakan endpoint dengan format OpenAI. Pada aplikasi yang sudah menggunakan OpenAI SDK, biasanya Anda hanya perlu mengganti `api_key` dan `base_url`/`baseURL`.
+
+## Python SDK
+
+```bash
+pip install openai
+```
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["KIOSAPI_API_KEY"],
+    base_url="https://kiosapi.com/v1/",
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Tulis haiku tentang laut."}],
+)
+
+print(response.choices[0].message.content)
+```
+
+### Streaming
+
+```python
+stream = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Ceritakan kisah singkat."}],
+    stream=True,
+)
+
+for chunk in stream:
+    content = chunk.choices[0].delta.content
+    if content:
+        print(content, end="", flush=True)
+```
+
+## Node.js SDK
+
+```bash
+npm install openai
+```
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.KIOSAPI_API_KEY,
+  baseURL: "https://kiosapi.com/v1/",
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o-mini",
+  messages: [{ role: "user", content: "Tulis haiku tentang laut." }],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+## Catatan konfigurasi
+
+- Gunakan `base_url` untuk Python dan `baseURL` untuk Node.js.
+- Arahkan client ke `https://kiosapi.com/v1/`, bukan ke endpoint lengkap.
+- API key harus tersedia saat runtime; jangan hardcode secret di source code.
+- Parameter `model` harus disesuaikan dengan model yang tersedia pada KiosAPI.
+- Untuk `/v1/messages` atau `/v1beta`, gunakan format native dan SDK/provider header yang sesuai, bukan client OpenAI secara otomatis.
+
+Baca [API Base URL](../api-base-url) dan [Autentikasi](../authentication) untuk aturan host, path, dan header.

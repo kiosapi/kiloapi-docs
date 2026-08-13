@@ -1,16 +1,16 @@
 ---
 title: OpenClaw
-description: Configure OpenClaw CLI to use KiloAPI as the backend provider.
+description: Configure OpenClaw CLI to use KiosAPI as the backend provider.
 ---
 
 # OpenClaw
 
-[OpenClaw](https://github.com/openclaw/openclaw) is an open-source CLI coding agent that supports multiple LLM providers. This guide shows you how to configure it to use KiloAPI.
+[OpenClaw](https://github.com/openclaw/openclaw) is an open-source CLI coding agent that supports multiple LLM providers. This guide shows you how to configure it to use KiosAPI.
 
 ## Prerequisites
 
 - **Node.js 18+** or **Bun**
-- A **KiloAPI API key** (starts with `sk-`)
+- A **KiosAPI API key** (starts with `sk-`)
 
 ## Installation
 
@@ -73,10 +73,10 @@ Create or edit `~/.openclaw/config.json`:
 }
 ```
 
-Replace `sk-xxx` with your actual KiloAPI key.
+Replace `sk-xxx` with your actual KiosAPI key.
 
 <Tip>
-  You can use any OpenAI-compatible model available on KiloAPI. Check the [models list](../api-reference/models/list-models) for available options.
+  You can use any OpenAI-compatible model available on KiosAPI. Check the [models list](../api-reference/models/list-models) for available options.
 </Tip>
 
 ## Usage
@@ -119,5 +119,5 @@ openclaw "Say hello"
 
 ## Need Help?
 
-- [KiloAPI Dashboard](https://kiosapi.com)
+- [KiosAPI Dashboard](https://kiosapi.com)
 - [Available Models](../api-reference/models/list-models)

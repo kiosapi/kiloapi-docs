@@ -1,0 +1,90 @@
+---
+title: Concurrency
+description: Kelola beberapa permintaan KiosAPI secara asinkron dengan batas concurrency.
+---
+
+# Concurrency
+
+Untuk batch atau pekerjaan yang memerlukan beberapa permintaan, gunakan kembali satu sesi HTTP dan batasi jumlah permintaan yang berjalan bersamaan. Nilai concurrency yang tepat bergantung pada aplikasi, ukuran payload, respons model, dan batas layanan akun Anda.
+
+## Instalasi
+
+```bash
+pip install aiohttp
+```
+
+## Contoh dengan `asyncio` dan `aiohttp`
+
+```python
+import asyncio
+import os
+import aiohttp
+
+URL = "https://kiosapi.com/v1/chat/completions"
+MODEL = "gpt-4o-mini"
+MAX_CONCURRENCY = 10
+
+
+async def create_completion(session, semaphore, prompt):
+    headers = {
+        "Authorization": f"Bearer {os.environ['KIOSAPI_API_KEY']}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+
+    async with semaphore:
+        async with session.post(URL, headers=headers, json=payload) as response:
+            response.raise_for_status()
+            data = await response.json()
+            return data["choices"][0]["message"]["content"]
+
+
+async def main(prompts):
+    semaphore = asyncio.Semaphore(MAX_CONCURRENCY)
+    timeout = aiohttp.ClientTimeout(total=120)
+
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        tasks = [
+            create_completion(session, semaphore, prompt)
+            for prompt in prompts
+        ]
+        return await asyncio.gather(*tasks, return_exceptions=True)
+
+
+if __name__ == "__main__":
+    prompts = ["Ringkas manfaat membaca.", "Jelaskan HTTP dalam satu kalimat."]
+    results = asyncio.run(main(prompts))
+    for result in results:
+        if isinstance(result, Exception):
+            print(f"Gagal: {result}")
+        else:
+            print(result)
+```
+
+## Prinsip penting
+
+- Gunakan satu `ClientSession` untuk memanfaatkan connection pooling.
+- Gunakan `Semaphore` agar jumlah request in-flight tetap terkendali.
+- Mulai dengan nilai kecil, lalu naikkan bertahap setelah mengamati latency, error, dan penggunaan resource.
+- Tangani `429` dan error sementara dengan retry exponential backoff. Jangan melakukan retry tanpa batas.
+- `return_exceptions=True` memungkinkan batch melaporkan error per item tanpa menghentikan semua hasil.
+
+KiosAPI tidak didokumentasikan di halaman ini dengan angka concurrency atau rate limit tetap. Periksa dashboard atau ketentuan akun Anda untuk limit yang berlaku.
+
+## Contoh retry sederhana
+
+```python
+async def with_retry(operation, attempts=3):
+    for attempt in range(attempts):
+        try:
+            return await operation()
+        except (aiohttp.ClientError, asyncio.TimeoutError):
+            if attempt == attempts - 1:
+                raise
+            await asyncio.sleep(2 ** attempt)
+```
+
+Gunakan retry hanya untuk error yang layak dicoba ulang dan pastikan operasi Anda aman terhadap duplikasi.

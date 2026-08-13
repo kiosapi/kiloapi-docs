@@ -1,0 +1,62 @@
+---
+title: Daftar dan Mulai Menggunakan KiosAPI
+description: Buat akun KiosAPI, siapkan API key, dan kirim permintaan pertama.
+---
+
+# Daftar dan Mulai Menggunakan KiosAPI
+
+Untuk menggunakan API KiosAPI, Anda memerlukan akun dan API key. Pendaftaran dilakukan melalui situs KiosAPI.
+
+## 1. Buat akun
+
+1. Buka [kiosapi.com](https://kiosapi.com).
+2. Ikuti alur pendaftaran atau masuk jika Anda sudah memiliki akun.
+3. Setelah masuk, buka dashboard KiosAPI.
+
+Tampilan menu dapat berubah. Jika Anda tidak menemukan pengaturan token, gunakan menu dashboard yang berkaitan dengan API key atau token management.
+
+## 2. Buat API key
+
+1. Buka bagian pengelolaan token/API key di dashboard.
+2. Pilih opsi untuk membuat token baru.
+3. Salin token dan simpan di password manager atau secret manager.
+
+API key biasanya memiliki awalan `sk-`. Jangan menempelkan key ke kode sumber, repository publik, aplikasi frontend, atau log.
+
+## 3. Simpan kredensial di environment variable
+
+Contoh untuk shell:
+
+```bash
+export KIOSAPI_API_KEY="sk-kio...xxxx"
+```
+
+Pada Windows PowerShell, padanan sederhananya adalah:
+
+```powershell
+$env:KIOSAPI_API_KEY = "sk-kio...xxxx"
+```
+
+Nama environment variable ini adalah konvensi aplikasi Anda. SDK tidak otomatis menggunakannya kecuali Anda membacanya dalam kode atau mengikuti konvensi SDK yang dipakai.
+
+## 4. Uji koneksi
+
+Contoh berikut menggunakan endpoint OpenAI Chat Completions:
+
+```bash
+curl "https://kiosapi.com/v1/chat/completions" \
+  -H "Authorization: Bearer ${KIOSAPI_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Halo!"}]
+  }'
+```
+
+Gunakan model yang tersedia untuk akun dan konfigurasi KiosAPI Anda. Jika Anda menerima `401`, periksa key dan header. Jika menerima `404`, periksa endpoint dan base URL.
+
+## Langkah berikutnya
+
+- [Autentikasi](../authentication) — pilih header yang sesuai.
+- [API Base URL](../api-base-url) — pahami `/v1`, `/v1/messages`, dan `/v1beta`.
+- [Quickstart](./quickstart) — gunakan SDK resmi OpenAI.

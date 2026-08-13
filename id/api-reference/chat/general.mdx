@@ -1,0 +1,129 @@
+---
+title: Penyelesaian Obrolan (Umum)
+description: Buat penyelesaian obrolan menggunakan format yang kompatibel dengan OpenAI
+---
+
+# Penyelesaian Obrolan (Umum)
+
+Titik akhir ini mendukung semua model obrolan di platform (termasuk model non-OpenAI seperti Claude, Gemini, dll.) menggunakan format permintaan OpenAI standar.
+
+<Info>
+OpenAI, Claude, Gemini dan model obrolan lainnya semuanya menggunakan format titik akhir ini. Untuk penggunaan API lebih detail, silakan baca [dokumentasi resmi OpenAI](https://platform.openai.com/docs/api-reference/chat).
+</Info>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model (misalnya `gpt-4o`)|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `system`, `user`, atau `assistant`|
+|`messages[].content`|string|Ya|Isi pesan|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2). Lebih tinggi = lebih acak|
+|`top_p`|number| Tidak |Pengambilan sampel inti. Alternatif untuk suhu|
+|`stream`|boolean| Tidak |Aktifkan keluaran streaming|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`n`|number| Tidak |Jumlah penyelesaian yang akan dihasilkan|
+|`presence_penalty`|number| Tidak |-2.0 hingga 2.0, memberikan penalti pada token baru|
+|`frequency_penalty`|number| Tidak |-2.0 hingga 2.0, menghukum token yang sering|
+|`response_format`|object| Tidak |Konfigurasi keluaran terstruktur|
+|`stop`|array| Tidak |Hentikan urutan|
+|`user`|string| Tidak |Pengidentifikasi pengguna akhir|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello world!"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+completion = openai.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "Hello world!"}
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(completion.choices[0].message.content)
+```
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-A1iMgDLzZtUJ9QDpfqDLxKH0zfUnp",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "gpt-4o-2024-05-13",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello there! How can I assist you today?",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 10,
+    "total_tokens": 19
+  },
+  "system_fingerprint": "fp_157b3831f5"
+}
+```
+
+### Skema Respons
+
+|Bidang|Tipe|Deskripsi|
+|-------|------|-------------|
+|`id`|string|ID penyelesaian unik|
+|`object`|string|Selalu `chat.completion`|
+|`created`|integer|Stempel waktu Unix|
+|`model`|string|Model yang digunakan|
+|`choices`|array|Berbagai pilihan penyelesaian|
+|`choices[].index`|integer|Indeks pilihan|
+|`choices[].message.role`|string|Selalu `assistant`|
+|`choices[].message.content`|string|Respon yang dihasilkan|
+|`choices[].finish_reason`|string|`stop`, `length`, `tool_calls`|
+|`usage.prompt_tokens`|integer|Token masukan|
+|`usage.completion_tokens`|integer|Token keluaran|
+|`usage.total_tokens`|integer|Jumlah token|

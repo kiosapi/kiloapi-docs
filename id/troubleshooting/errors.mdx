@@ -1,0 +1,54 @@
+---
+title: Kode Error dan Pemecahan Masalah
+description: Diagnosis error autentikasi, routing, model, kuota, rate limit, dan upstream pada KiosAPI.
+---
+
+# Kode Error dan Pemecahan Masalah
+
+Mulai dari request curl minimal sebelum memeriksa SDK atau aplikasi desktop.
+
+## Checklist cepat
+
+1. Pastikan host request adalah `kiosapi.com`.
+2. Pastikan path dan header autentikasi sesuai dengan protokol.
+3. Panggil `GET /v1/models` dan salin ID model yang tersedia secara persis.
+4. Periksa status token, kuota, saldo akun, dan masa berlaku.
+5. Hapus path ganda seperti `/v1/v1/chat/completions`.
+
+## Status yang umum
+
+| Status | Arti | Yang harus diperiksa |
+|---|---|---|
+| `400` | Request tidak valid | Bentuk JSON, parameter, format role/content |
+| `401` | Autentikasi gagal | Key hilang, header salah, token dicabut |
+| `403` | Akses ditolak | Pembatasan token, izin model atau akun |
+| `404` | Route atau model tidak ditemukan | Base URL, endpoint, ID model |
+| `429` | Rate limit atau kuota | Kuota token, saldo, concurrency |
+| `500` | Error pemrosesan gateway | Ulangi sekali dengan request minimal |
+| `502` / `503` | Upstream tidak tersedia | Gangguan sementara; retry dengan backoff atau ganti model |
+
+## Tes koneksi minimal
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Balas dengan OK"}],
+    "max_tokens": 10
+  }'
+```
+
+Jika model tersebut tidak tersedia, ganti dengan ID dari `GET /v1/models`.
+
+## Kesalahan base URL
+
+- `/v1/v1/...`: klien menambahkan `/v1`; gunakan `https://kiosapi.com`.
+- `/v1` hilang: gunakan `https://kiosapi.com/v1` bila klien meminta root OpenAI lengkap.
+- Request Claude masuk ke `/chat/completions`: gunakan format OpenAI atau pindahkan ke `/v1/messages`.
+- Request Gemini memakai Bearer auth: gunakan `x-goog-api-key` untuk route Gemini native.
+
+## Melaporkan masalah yang menetap
+
+Sertakan waktu kejadian, path endpoint, status HTTP, ID model, nama/versi klien, dan response body yang sudah disensor. Jangan pernah menyertakan API key lengkap.

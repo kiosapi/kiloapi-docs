@@ -1,0 +1,96 @@
+---
+title: Hermes Agent
+description: Konfigurasikan Hermes Agent untuk menggunakan KiosAPI sebagai penyedia kustom yang kompatibel dengan OpenAI.
+---
+
+# Hermes Agent
+
+[Hermes Agent](https://hermes-agent.nousresearch.com/docs) adalah agen AI sumber terbuka yang berjalan di terminal, aplikasi desktop, dan platform perpesanan. Panduan ini mengonfigurasi pengaturan penyedia yang kompatibel dengan OpenAI agar permintaan dikirim melalui KiosAPI.
+
+## Prasyarat
+
+- [Hermes Agent telah diinstal](https://hermes-agent.nousresearch.com/docs/getting-started/installation)
+- **Kunci API KiosAPI** (diawali dengan `sk-`) dari [Dashboard](https://kiosapi.com) → **Token Management**
+
+## Dapatkan Kunci API Anda
+
+1. Masuk ke [Dashboard KiosAPI](https://kiosapi.com)
+2. Buka **Token Management**
+3. Buat kunci API baru atau salin kunci yang ada
+
+## Konfigurasikan Hermes
+
+Atur kunci Anda di lingkungan sebelum menjalankan Hermes:
+
+```bash
+export KIOSAPI_KEY="sk-xxx"
+```
+
+Di Windows PowerShell:
+
+```powershell
+setx KIOSAPI_KEY "sk-xxx"
+```
+
+Buat atau edit `~/.hermes/config.yaml`, lalu konfigurasikan endpoint yang kompatibel dengan OpenAI:
+
+```yaml
+model:
+  provider: openai
+  base_url: https://kiosapi.com/v1
+  api_key: ${KIOSAPI_KEY}
+  default: gpt-4o
+```
+
+Ganti `sk-xxx` dengan kunci KiosAPI Anda, kemudian buka sesi terminal baru setelah memakai `setx` di Windows.
+
+<Info>
+  Gunakan `https://kiosapi.com/v1` untuk API yang kompatibel dengan OpenAI. Pilih model yang tersedia untuk grup token KiosAPI Anda; contoh ini menggunakan `gpt-4o`.
+</Info>
+
+## Verifikasi Konfigurasi
+
+Jalankan satu permintaan:
+
+```bash
+hermes chat -q "Say hello in one sentence."
+```
+
+Atau mulai sesi interaktif:
+
+```bash
+hermes
+```
+
+Jika Hermes mengembalikan respons model, Hermes menggunakan endpoint KiosAPI yang dikonfigurasi.
+
+## Ganti Model
+
+Perbarui `model.default` di `~/.hermes/config.yaml`, lalu mulai ulang Hermes:
+
+```yaml
+model:
+  default: gpt-4o-mini
+```
+
+Periksa [model yang tersedia](../api-reference/models/list-models) sebelum memilih model.
+
+## Pemecahan Masalah
+
+### Kesalahan autentikasi
+
+- Pastikan `KIOSAPI_KEY` telah diatur dan diawali dengan `sk-`
+- Pastikan `api_key: ${KIOSAPI_KEY}` sesuai dengan nama variabel lingkungan
+- Buka sesi terminal baru setelah mengatur variabel lingkungan Windows dengan `setx`
+
+### Kesalahan koneksi atau model
+
+- Pastikan `base_url` persis `https://kiosapi.com/v1`
+- Pastikan model yang dipilih tersedia untuk grup token Anda
+- Jalankan `hermes doctor` untuk memeriksa konfigurasi dan dependensi Hermes
+
+## Butuh Bantuan?
+
+- [Dashboard KiosAPI](https://kiosapi.com)
+- [Dokumentasi Hermes Agent](https://hermes-agent.nousresearch.com/docs)
+- [Model Tersedia](../api-reference/models/list-models)

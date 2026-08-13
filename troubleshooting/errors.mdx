@@ -1,0 +1,54 @@
+---
+title: Error Codes and Troubleshooting
+description: Diagnose authentication, routing, model, quota, rate-limit, and upstream errors when using KiosAPI.
+---
+
+# Error Codes and Troubleshooting
+
+Start with a minimal curl request before debugging an SDK or desktop client.
+
+## Quick checklist
+
+1. Confirm the request host is `kiosapi.com`.
+2. Confirm the protocol-specific path and authentication header match.
+3. Call `GET /v1/models` and copy an available model ID exactly.
+4. Check token status, quota, account balance, and expiration.
+5. Remove accidental duplicate paths such as `/v1/v1/chat/completions`.
+
+## Common status codes
+
+| Status | Meaning | What to check |
+|---|---|---|
+| `400` | Invalid request | JSON shape, unsupported parameters, role/content format |
+| `401` | Authentication failed | Missing key, wrong header, invalid or revoked token |
+| `403` | Access denied | Token restrictions, model or account permissions |
+| `404` | Route or model not found | Base URL, endpoint path, exact model ID |
+| `429` | Rate or quota limit | Token quota, account balance, request concurrency |
+| `500` | Gateway processing error | Retry once with a minimal request; record request details |
+| `502` / `503` | Upstream unavailable | Temporary provider/model issue; retry with backoff or another model |
+
+## Minimal connectivity test
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Reply with OK"}],
+    "max_tokens": 10
+  }'
+```
+
+If the model is unavailable to your token, replace it with an ID returned by `GET /v1/models`.
+
+## Base URL mistakes
+
+- `/v1/v1/...`: the client appended `/v1`; configure `https://kiosapi.com`.
+- Missing `/v1`: configure `https://kiosapi.com/v1` when the client expects the complete OpenAI root.
+- Claude request sent to `/chat/completions`: use the intended OpenAI format or switch the client to `/v1/messages`.
+- Gemini request sent with Bearer auth: use `x-goog-api-key` for the native Gemini route.
+
+## Reporting a persistent issue
+
+Include the timestamp, endpoint path, HTTP status, model ID, client name/version, and sanitized response body. Never include the full API key.

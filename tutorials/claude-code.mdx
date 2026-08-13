@@ -1,16 +1,16 @@
 ---
 title: Claude Code
-description: Set up Anthropic's Claude Code CLI with KiloAPI to use Claude models in your terminal.
+description: Set up Anthropic's Claude Code CLI with KiosAPI to use Claude models in your terminal.
 ---
 
 # Claude Code
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's official agentic coding tool that runs in your terminal. This guide shows you how to configure it to use KiloAPI as the backend provider.
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's official agentic coding tool that runs in your terminal. This guide shows you how to configure it to use KiosAPI as the backend provider.
 
 ## Prerequisites
 
 - **Node.js 18+** — check with `node --version`
-- A **KiloAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
+- A **KiosAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
 
 ## Installation
 
@@ -28,7 +28,7 @@ claude --version
 
 ## Get Your API Key
 
-1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+1. Log in to the [KiosAPI Dashboard](https://kiosapi.com)
 2. Navigate to **Token Management**
 3. Create or copy an existing API key (starts with `sk-`)
 
@@ -64,7 +64,7 @@ Create a `.claude/settings.json` file in your project root to inject environment
 }
 ```
 
-Replace `sk-xxx` with your actual KiloAPI key.
+Replace `sk-xxx` with your actual KiosAPI key.
 
 <Info>
   The `ANTHROPIC_BASE_URL` should be `https://kiosapi.com` (without `/v1`). Claude Code appends the API path automatically.
@@ -177,7 +177,7 @@ Add this environment variable to your configuration:
 "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
 ```
 
-This disables experimental beta headers that KiloAPI may not support.
+This disables experimental beta headers that KiosAPI may not support.
 
 ### Length / Max Output Token Error
 
@@ -211,6 +211,6 @@ If Claude responds, your configuration is working correctly.
 
 ## Need Help?
 
-- [KiloAPI Dashboard](https://kiosapi.com)
+- [KiosAPI Dashboard](https://kiosapi.com)
 - [Token Management Guide](/token-management/usage)
 - [Available Models](../api-reference/models/list-models)

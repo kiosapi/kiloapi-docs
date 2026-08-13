@@ -1,0 +1,165 @@
+---
+title: Obrolan - Fungsi Memanggil
+description: Gunakan pemanggilan fungsi/alat dengan model obrolan
+---
+
+# Obrolan - Fungsi Memanggil
+
+Aktifkan model untuk memanggil fungsi eksternal dengan menyediakan array `tools`. Model ini akan menghasilkan input JSON terstruktur untuk fungsi tersebut, bukan respons teks.
+
+<Info>
+Untuk lebih jelasnya, lihat [Panduan Memanggil Fungsi OpenAI](https://platform.openai.com/docs/guides/function-calling).
+</Info>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model (misalnya `gpt-4o`)|
+|`messages`|array|Ya|Array objek pesan|
+|`tools`|array|Ya|Array definisi alat/fungsi|
+|`tools[].type`|string|Ya|Selalu `function`|
+|`tools[].function.name`|string|Ya|Nama fungsi (a-z, A-Z, 0-9, garis bawah, tanda hubung, maks 64)|
+|`tools[].function.description`|string| Tidak |Deskripsi fungsi|
+|`tools[].function.parameters`|object|Ya|Parameter penentu objek Skema JSON|
+|`tools[].function.parameters.type`|string|Ya|Biasanya `object`|
+|`tools[].function.parameters.properties`|object|Ya|Definisi parameter|
+|`tools[].function.parameters.required`|array| Tidak |Nama parameter yang diperlukan|
+|`tools[].function.strict`|boolean| Tidak |Aktifkan kepatuhan skema yang ketat|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is the weather like in Paris today?"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "Get current temperature for a given location.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "City and country e.g. Paris, France"
+              }
+            },
+            "required": ["location"],
+            "additionalProperties": false
+          },
+          "strict": true
+        }
+      }
+    ]
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+import json
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "What is the weather like in Paris today?"}
+    ],
+    tools=[
+        {
+            "type": "function",
+            "function": {
+                "name": "get_weather",
+                "description": "Get current temperature for a given location.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "string",
+                            "description": "City and country e.g. Paris, France"
+                        }
+                    },
+                    "required": ["location"],
+                    "additionalProperties": False
+                },
+                "strict": True
+            }
+        }
+    ]
+)
+
+# The model returns a function call
+tool_call = response.choices[0].message.tool_calls[0]
+args = json.loads(tool_call.function.arguments)
+print(args)  # {"location": "Paris, France"}
+```
+
+## Respons
+
+Saat model memutuskan untuk memanggil suatu fungsi, responsnya akan berisi `tool_calls`, bukan teks `content`:
+
+```json
+{
+  "id": "chatcmpl-Ax2bU1RFE8P0Y9uqKcErQNLcx4dDe",
+  "object": "chat.completion",
+  "created": 1738634724,
+  "model": "gpt-4o-2024-08-06",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_FezxjoWuDV1CL3dITVFOjUzK",
+            "type": "function",
+            "function": {
+              "name": "get_weather",
+              "arguments": "{\"location\":\"Paris, France\"}"
+            }
+          }
+        ],
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 65,
+    "completion_tokens": 16,
+    "total_tokens": 81
+  },
+  "system_fingerprint": "fp_f3927aa00d"
+}
+```
+
+<Tip>
+`finish_reason` akan menjadi `tool_calls` ketika model ingin memanggil suatu fungsi. Jalankan sendiri fungsinya, lalu kirimkan kembali hasilnya dalam pesan baru dengan `role: "tool"`.
+</Tip>

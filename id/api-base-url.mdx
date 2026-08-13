@@ -1,0 +1,69 @@
+---
+title: API Base URL
+description: Konfigurasikan host dan path API KiosAPI dengan benar.
+---
+
+# API Base URL
+
+Host KiosAPI adalah:
+
+```text
+https://kiosapi.com
+```
+
+Untuk OpenAI-compatible SDK, gunakan base URL berikut:
+
+```text
+https://kiosapi.com/v1/
+```
+
+## Path berdasarkan format API
+
+| Kebutuhan | URL lengkap |
+|---|---|
+| OpenAI Chat Completions | `https://kiosapi.com/v1/chat/completions` |
+| OpenAI Responses | `https://kiosapi.com/v1/responses` |
+| Claude native | `https://kiosapi.com/v1/messages` |
+| Gemini native | `https://kiosapi.com/v1beta/models/{model}:generateContent` |
+
+`/v1/` adalah base URL untuk OpenAI SDK. Endpoint native Claude memakai `/v1/messages`, sedangkan endpoint native Gemini memakai `/v1beta` dan path modelnya.
+
+## Contoh konfigurasi
+
+### Python OpenAI SDK
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["KIOSAPI_API_KEY"],
+    base_url="https://kiosapi.com/v1/",
+)
+```
+
+### Node.js OpenAI SDK
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.KIOSAPI_API_KEY,
+  baseURL: "https://kiosapi.com/v1/",
+});
+```
+
+### Permintaan HTTP langsung
+
+Untuk HTTP langsung, gabungkan host dengan endpoint yang dituju dan pilih header autentikasi sesuai [panduan autentikasi](./authentication).
+
+```bash
+curl "https://kiosapi.com/v1/chat/completions" \
+  -H "Authorization: Bearer ${KIOSAPI_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Halo!"}]}'
+```
+
+<Warning title="Periksa path sebelum mengubah kode">
+  Jangan mengganti `https://kiosapi.com/v1/` dengan host provider lain ketika menggunakan API key KiosAPI. Kesalahan host, `/v1`, `/v1/messages`, atau `/v1beta` dapat menghasilkan `401` atau `404`.
+</Warning>

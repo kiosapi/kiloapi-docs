@@ -1,0 +1,179 @@
+---
+title: Gemini CLI
+description: Siapkan Gemini CLI dari Google untuk menggunakan KiosAPI sebagai penyedia backend.
+---
+
+# Gemini CLI
+
+[Gemini CLI](https://github.com/google-gemini/gemini-cli) adalah antarmuka baris perintah resmi Google untuk berinteraksi dengan model Gemini. Panduan ini menjelaskan cara mengonfigurasikannya agar menggunakan KiosAPI.
+
+## Prasyarat
+
+- **Node.js 18+** — periksa dengan `node --version`
+- **Kunci API KiosAPI** (diawali dengan `sk-`) dari [Dashboard](https://kiosapi.com) → **Token Management**
+
+## Instalasi
+
+Instal Gemini CLI secara global melalui npm:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+Verifikasi instalasi:
+
+```bash
+gemini --version
+```
+
+## Dapatkan Kunci API Anda
+
+1. Masuk ke [Dashboard KiosAPI](https://kiosapi.com)
+2. Buka **Token Management**
+3. Buat atau salin kunci API yang ada (diawali dengan `sk-`)
+
+## Konfigurasi
+
+### 1. Atur URL dasar
+
+Buat `~/.gemini/.env`:
+
+```bash
+GOOGLE_GEMINI_BASE_URL=https://kiosapi.com/
+```
+
+<Info>
+  URL dasar harus diakhiri garis miring `/`. Gemini CLI menambahkan jalur API setelahnya.
+</Info>
+
+### 2. Konfigurasikan pengaturan
+
+Buat `~/.gemini/settings.json`:
+
+```json
+{
+  "auth": {
+    "selectedType": "api-key"
+  },
+  "model": "gemini-2.5-pro",
+  "models": {
+    "gemini-2.5-pro": {
+      "name": "Gemini 2.5 Pro",
+      "base_url": "https://kiosapi.com/"
+    },
+    "gemini-2.5-flash": {
+      "name": "Gemini 2.5 Flash",
+      "base_url": "https://kiosapi.com/"
+    },
+    "gemini-2.5-flash-lite": {
+      "name": "Gemini 2.5 Flash Lite",
+      "base_url": "https://kiosapi.com/"
+    }
+  }
+}
+```
+
+| Pengaturan | Deskripsi |
+|---------|-------------|
+| `auth.selectedType` | Metode autentikasi — atur ke `api-key` untuk KiosAPI |
+| `model` | Model default yang digunakan |
+| `models` | Definisi model dengan nama tampilan dan URL dasar |
+
+### 3. Jalankan Gemini CLI
+
+Jalankan perintah berikut di terminal Anda:
+
+```bash
+gemini
+```
+
+Pada peluncuran pertama, Gemini CLI akan meminta Anda memilih metode autentikasi:
+
+1. Pilih **API Key**
+2. Masukkan kunci KiosAPI Anda (`sk-xxx`)
+3. Tekan Enter untuk mengonfirmasi
+
+<Warning>
+  Jangan pilih "Google Login". Opsi ini mencoba mengautentikasi langsung ke server Google dan tidak akan berfungsi dengan KiosAPI. Selalu pilih **API Key**.
+</Warning>
+
+## Penggunaan
+
+### Mode interaktif
+
+```bash
+gemini
+```
+
+Ini membuka REPL interaktif untuk mengobrol dengan Gemini, memintanya membaca file, dan menjalankan tugas.
+
+### Pertanyaan langsung
+
+```bash
+gemini "What is the capital of France?"
+```
+
+### Dengan konteks file
+
+```bash
+gemini "Explain this code" < main.py
+```
+
+## Mengganti Model
+
+Ubah model default di `~/.gemini/settings.json`:
+
+```json
+{
+  "model": "gemini-2.5-flash"
+}
+```
+
+Atau tentukan model per sesi:
+
+```bash
+gemini --model gemini-2.5-flash "Summarize this article"
+```
+
+## Model Tersedia
+
+| ID Model | Deskripsi |
+|----------|-------------|
+| `gemini-2.5-pro` | Model Gemini paling mampu untuk penalaran kompleks |
+| `gemini-2.5-flash` | Cepat dan hemat biaya untuk tugas sehari-hari |
+| `gemini-2.5-flash-lite` | Model ringan yang sangat cepat |
+
+<Tip>
+  Periksa [halaman harga KiosAPI](https://kiosapi.com/pricing) untuk daftar lengkap model Gemini yang tersedia beserta biayanya.
+</Tip>
+
+## Pemecahan Masalah
+
+### Autentikasi Gagal
+
+- Pastikan Anda memilih **API Key** (bukan Google Login) saat penyiapan
+- Pastikan kunci API Anda benar dan diawali dengan `sk-`
+- Jalankan kembali `gemini` dan pilih ulang metode autentikasi
+
+### Kesalahan Koneksi
+
+- Periksa bahwa `GOOGLE_GEMINI_BASE_URL` di `~/.gemini/.env` adalah `https://kiosapi.com/` (dengan garis miring akhir)
+- Pastikan `base_url` di `settings.json` juga memiliki garis miring akhir
+- Periksa koneksi jaringan Anda
+
+### Model Tidak Ditemukan
+
+- Periksa bahwa ID model sama persis (misalnya `gemini-2.5-pro`, bukan `gemini-pro`)
+- Konfirmasikan model tersedia di KiosAPI melalui [daftar model](../api-reference/models/list-models)
+
+## Verifikasi Pengaturan
+
+```bash
+gemini "Say hello"
+```
+
+## Butuh Bantuan?
+
+- [Dashboard KiosAPI](https://kiosapi.com)
+- [Panduan Manajemen Token](/token-management/usage)
+- [Model Tersedia](../api-reference/models/list-models)

@@ -1,0 +1,116 @@
+---
+title: OpenCode
+description: Konfigurasikan OpenCode CLI untuk menggunakan KiosAPI sebagai penyedia backend.
+---
+
+# OpenCode
+
+[OpenCode](https://github.com/opencode-ai/opencode) adalah agen coding AI untuk terminal. Panduan ini menjelaskan cara menyiapkannya dengan KiosAPI.
+
+## Prasyarat
+
+- **Node.js 18+** — periksa dengan `node --version`
+- **Kunci API KiosAPI** (diawali dengan `sk-`)
+
+## Instalasi
+
+Instal OpenCode secara global:
+
+```bash
+npm install -g @opencode-ai/opencode
+```
+
+Verifikasi instalasi:
+
+```bash
+opencode --version
+```
+
+## Konfigurasi
+
+### 1. Atur variabel lingkungan
+
+**Windows (PowerShell):**
+
+```powershell
+setx OPENAI_API_KEY "sk-xxx"
+setx OPENAI_BASE_URL "https://kiosapi.com/v1"
+```
+
+**macOS / Linux:**
+
+Tambahkan ke `~/.bashrc` atau `~/.zshrc`:
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://kiosapi.com/v1"
+```
+
+Muat ulang shell Anda:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### 2. File konfigurasi
+
+Buat atau edit `~/.config/opencode/config.json`:
+
+```json
+{
+  "provider": "openai",
+  "apiBase": "https://kiosapi.com/v1",
+  "apiKey": "sk-xxx",
+  "model": "gpt-4o"
+}
+```
+
+Ganti `sk-xxx` dengan kunci KiosAPI Anda yang sebenarnya.
+
+## Penggunaan
+
+### Mode interaktif
+
+```bash
+opencode
+```
+
+### Pertanyaan langsung
+
+```bash
+opencode "Write a Python script to parse CSV files"
+```
+
+### Tentukan model
+
+```bash
+opencode --model gpt-4o-mini "Explain this error message"
+```
+
+<Tip>
+  OpenCode mendukung model kompatibel OpenAI apa pun di KiosAPI. Lihat [daftar model](../api-reference/models/list-models) untuk opsi yang tersedia.
+</Tip>
+
+## Pemecahan Masalah
+
+### Kesalahan Autentikasi
+
+- Pastikan `OPENAI_API_KEY` sudah benar: `echo $OPENAI_API_KEY`
+- Pastikan kunci diawali dengan `sk-`
+- Periksa bahwa `apiBase` dalam file konfigurasi sesuai dengan variabel lingkungan
+
+### Model Tidak Ditemukan
+
+- Periksa bahwa nama model valid di [halaman model KiosAPI](https://kiosapi.com/pricing)
+- Pastikan model termasuk dalam grup token Anda
+
+## Verifikasi Pengaturan
+
+```bash
+opencode "Say hello"
+```
+
+## Butuh Bantuan?
+
+- [KiosAPI Dashboard](https://kiosapi.com)
+- [Model Tersedia](../api-reference/models/list-models)

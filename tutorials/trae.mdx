@@ -1,16 +1,16 @@
 ---
 title: Trae
-description: Configure Trae AI code editor to use KiloAPI as the backend provider.
+description: Configure Trae AI code editor to use KiosAPI as the backend provider.
 ---
 
 # Trae
 
-[Trae](https://www.trae.ai/) is an AI-powered code editor by ByteDance. This guide shows you how to configure it to use KiloAPI instead of the default provider.
+[Trae](https://www.trae.ai/) is an AI-powered code editor by ByteDance. This guide shows you how to configure it to use KiosAPI instead of the default provider.
 
 ## Prerequisites
 
 - [Download and install Trae](https://www.trae.ai/)
-- A **KiloAPI API key** (starts with `sk-`)
+- A **KiosAPI API key** (starts with `sk-`)
 
 ## Configuration
 
@@ -28,10 +28,10 @@ Set the following values in the custom provider configuration:
 |-------|-------|
 | **API Base URL** | `https://kiosapi.com/v1` |
 | **API Key** | `sk-xxx` |
-| **Model** | `gpt-4o` or any model available on KiloAPI |
+| **Model** | `gpt-4o` or any model available on KiosAPI |
 
 <Info>
-  Trae supports OpenAI-compatible providers. KiloAPI is fully OpenAI-compatible, so it works as a drop-in replacement.
+  Trae supports OpenAI-compatible providers. KiosAPI is fully OpenAI-compatible, so it works as a drop-in replacement.
 </Info>
 
 ### 3. Set environment variables (alternative)
@@ -60,7 +60,7 @@ In the Trae chat panel or inline completion settings, select your custom provide
 
 ## Usage
 
-Once configured, you can use Trae's AI features (chat, inline completions, code generation) with KiloAPI as the backend.
+Once configured, you can use Trae's AI features (chat, inline completions, code generation) with KiosAPI as the backend.
 
 <Tip>
   For best results with coding tasks, use models like `gpt-4o`, `claude-sonnet-4-6`, or `deepseek-chat`. Check the [models list](../api-reference/models/list-models) for all available options.
@@ -76,10 +76,10 @@ Once configured, you can use Trae's AI features (chat, inline completions, code 
 
 ### Model not available
 
-- Check that the model name is supported on KiloAPI
+- Check that the model name is supported on KiosAPI
 - Verify your token group includes the desired model
 
 ## Need Help?
 
-- [KiloAPI Dashboard](https://kiosapi.com)
+- [KiosAPI Dashboard](https://kiosapi.com)
 - [Available Models](../api-reference/models/list-models)

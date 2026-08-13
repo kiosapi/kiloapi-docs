@@ -1,0 +1,93 @@
+---
+title: Buat Sematan
+description: Hasilkan penyematan vektor dari teks
+---
+
+# Buat Sematan
+
+Hasilkan penyematan vektor dari input teks. Berguna untuk pencarian semantik, pengelompokan, dan sistem rekomendasi.
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/embeddings" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Menyematkan nama model (misalnya `text-embedding-3-large`)|
+|`input`|string/array|Ya|Teks yang akan disematkan (string atau array string). Maksimum 8192 token per masukan.|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/embeddings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "text-embedding-3-large",
+    "input": "The weather is beautiful today"
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.embeddings.create(
+    model="text-embedding-3-large",
+    input="The weather is beautiful today"
+)
+
+print(response.data[0].embedding[:5])  # First 5 dimensions
+```
+
+## Respons
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "index": 0,
+      "embedding": [
+        -0.022425562,
+        -0.010263717,
+        0.022136442,
+        0.015323295,
+        -0.0013466021
+      ]
+    }
+  ],
+  "model": "text-embedding-3-large",
+  "usage": {
+    "prompt_tokens": 16,
+    "total_tokens": 16
+  }
+}
+```
+
+### Skema Respons
+
+|Bidang|Tipe|Deskripsi|
+|-------|------|-------------|
+|`object`|string|Selalu `list`|
+|`data`|array|Array penyematan objek|
+|`data[].object`|string|Selalu `embedding`|
+|`data[].index`|integer|Indeks penyematan|
+|`data[].embedding`|array|Array vektor (mengambang)|
+|`model`|string|Model yang digunakan|
+|`usage.prompt_tokens`|integer|Token masukan|
+|`usage.total_tokens`|integer|Jumlah token|

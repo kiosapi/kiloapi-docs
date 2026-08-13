@@ -1,0 +1,123 @@
+---
+title: OpenClaw
+description: Konfigurasikan OpenClaw CLI untuk menggunakan KiosAPI sebagai penyedia backend.
+---
+
+# OpenClaw
+
+[OpenClaw](https://github.com/openclaw/openclaw) adalah agen coding CLI sumber terbuka yang mendukung beberapa penyedia LLM. Panduan ini menjelaskan cara mengonfigurasikannya agar menggunakan KiosAPI.
+
+## Prasyarat
+
+- **Node.js 18+** or **Bun**
+- **Kunci API KiosAPI** (diawali dengan `sk-`)
+
+## Instalasi
+
+Instal OpenClaw secara global:
+
+```bash
+npm install -g openclaw
+```
+
+Atau dengan Bun:
+
+```bash
+bun install -g openclaw
+```
+
+Verifikasi instalasi:
+
+```bash
+openclaw --version
+```
+
+## Konfigurasi
+
+### 1. Atur variabel lingkungan
+
+OpenClaw membaca kunci API dan URL dasar dari variabel lingkungan.
+
+**Windows (PowerShell):**
+
+```powershell
+setx OPENAI_API_KEY "sk-xxx"
+setx OPENAI_BASE_URL "https://kiosapi.com/v1"
+```
+
+**macOS / Linux:**
+
+Add to `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://kiosapi.com/v1"
+```
+
+Muat ulang shell Anda:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+### 2. File konfigurasi
+
+Buat atau edit `~/.openclaw/config.json`:
+
+```json
+{
+  "provider": "openai",
+  "apiBase": "https://kiosapi.com/v1",
+  "apiKey": "sk-xxx",
+  "model": "gpt-4o"
+}
+```
+
+Ganti `sk-xxx` dengan kunci KiosAPI Anda yang sebenarnya.
+
+<Tip>
+  Anda dapat menggunakan model kompatibel OpenAI apa pun yang tersedia di KiosAPI. Periksa [daftar model](../api-reference/models/list-models) untuk opsi yang tersedia.
+</Tip>
+
+## Penggunaan
+
+### Mode interaktif
+
+```bash
+openclaw
+```
+
+### Pertanyaan langsung
+
+```bash
+openclaw "Create a React component for a todo list"
+```
+
+### Tentukan model
+
+```bash
+openclaw --model claude-sonnet-4-6 "Refactor this function"
+```
+
+## Pemecahan Masalah
+
+### Kesalahan Autentikasi
+
+- Pastikan kunci API Anda sudah benar dan diawali dengan `sk-`
+- Pastikan `apiBase` dalam file konfigurasi sesuai dengan variabel lingkungan
+
+### Kesalahan Koneksi
+
+- Pastikan URL dasar adalah `https://kiosapi.com/v1` (dengan `/v1`)
+- Periksa pengaturan jaringan dan firewall Anda
+
+## Verifikasi Pengaturan
+
+```bash
+openclaw "Say hello"
+```
+
+## Butuh Bantuan?
+
+- [KiosAPI Dashboard](https://kiosapi.com)
+- [Model Tersedia](../api-reference/models/list-models)

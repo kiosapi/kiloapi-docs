@@ -1,0 +1,178 @@
+---
+title: OpenAI Codex CLI
+description: Konfigurasikan OpenAI Codex CLI untuk menggunakan KiosAPI sebagai penyedia backend.
+---
+
+# OpenAI Codex CLI
+
+[OpenAI Codex CLI](https://github.com/openai/codex) adalah agen coding baris perintah dari OpenAI. Panduan ini menjelaskan cara mengonfigurasikannya agar berfungsi dengan KiosAPI.
+
+## Persyaratan Sistem
+
+| Persyaratan | Minimum | Direkomendasikan |
+|-------------|---------|-----------------|
+| **Sistem Operasi** | macOS 12+, Ubuntu 20.04+, atau Windows 11 (WSL2) | — |
+| **RAM** | 4 GB | 8 GB |
+| **Node.js** | 22+ | LTS terbaru |
+| **Ruang Disk** | 200 MB | 500 MB |
+
+## Instalasi
+
+Instal Codex CLI secara global melalui npm:
+
+```bash
+npm i -g @openai/codex
+```
+
+Atau melalui Homebrew (macOS/Linux):
+
+```bash
+brew install codex
+```
+
+Verifikasi instalasi:
+
+```bash
+codex --version
+```
+
+## Dapatkan Kunci API Anda
+
+1. Masuk ke [Dashboard KiosAPI](https://kiosapi.com)
+2. Buka **Token Management**
+3. Buat atau salin kunci API yang ada (diawali dengan `sk-`)
+
+## Konfigurasi
+
+### 1. Buat file konfigurasi
+
+Buat `~/.codex/config.toml`:
+
+```toml
+[model_providers.kiosapi]
+name = "KiosAPI"
+base_url = "https://kiosapi.com/v1"
+wire_api = "responses"
+env_key = "KIOSAPI_KEY"
+
+[profiles.kiosapi]
+model = "o4-mini"
+model_provider = "kiosapi"
+```
+
+<Info>
+  Pengaturan `wire_api = "responses"` memberi tahu Codex agar menggunakan format Responses API OpenAI, yang didukung KiosAPI.
+</Info>
+
+### 2. Atur variabel lingkungan
+
+Atur kunci KiosAPI Anda sebagai variabel lingkungan `KIOSAPI_KEY`.
+
+**Windows (PowerShell):**
+
+```powershell
+setx KIOSAPI_KEY "sk-xxx"
+```
+
+**macOS / Linux:**
+
+Tambahkan ke `~/.bashrc` atau `~/.zshrc`:
+
+```bash
+export KIOSAPI_KEY="sk-xxx"
+```
+
+Kemudian muat ulang:
+
+```bash
+source ~/.bashrc  # or ~/.zshrc
+```
+
+## Penggunaan
+
+### Mode interaktif
+
+```bash
+codex
+```
+
+### Pertanyaan langsung
+
+```bash
+codex "Explain how async/await works in Python"
+```
+
+### Menggunakan profil KiosAPI
+
+```bash
+codex --profile kiosapi "Write a function to reverse a linked list"
+```
+
+## Plugin VSCode
+
+Codex juga tersedia sebagai [ekstensi VSCode](https://marketplace.visualstudio.com/items?itemName=openai.codex). Setelah memasangnya, konfigurasikan KiosAPI dengan variabel lingkungan yang sama di pengaturan VSCode atau terminal Anda.
+
+<Warning>
+  Ekstensi VSCode membaca variabel lingkungan dari shell Anda. Pastikan `KIOSAPI_KEY` diekspor di shell yang menjalankan VSCode, atau atur di terminal terintegrasi.
+</Warning>
+
+## Konfigurasi Lanjutan
+
+### Mode CI Noninteraktif
+
+Untuk pipeline CI/CD, jalankan Codex dalam mode noninteraktif:
+
+```bash
+codex --quiet --auto-approve "Fix the failing test in tests/auth.test.js"
+```
+
+| Flag | Deskripsi |
+|------|-----------|
+| `--quiet` | Menyembunyikan prompt interaktif |
+| `--auto-approve` | Menyetujui perubahan file secara otomatis |
+| `--json` | Menghasilkan output sebagai JSON |
+
+### Server MCP
+
+Codex mendukung server [Model Context Protocol (MCP)](https://modelcontextprotocol.io) untuk akses alat tambahan. Tambahkan server MCP di `~/.codex/config.toml`:
+
+```toml
+[mcp.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
+
+[mcp.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "ghp_xxx" }
+```
+
+## Pemecahan Masalah
+
+### Kesalahan Autentikasi (401)
+
+- Pastikan `KIOSAPI_KEY` sudah benar: `echo $KIOSAPI_KEY`
+- Pastikan kunci diawali dengan `sk-`
+- Periksa bahwa `env_key` di konfigurasi sesuai dengan nama variabel lingkungan
+
+### Model Tidak Ditemukan
+
+- Pastikan nama model di profil Anda benar
+- Periksa model yang tersedia pada [halaman harga KiosAPI](https://kiosapi.com/pricing)
+
+### Kesalahan Koneksi
+
+- Pastikan `base_url` adalah `https://kiosapi.com/v1` (dengan `/v1`)
+- Periksa koneksi jaringan dan pengaturan firewall Anda
+
+## Verifikasi Pengaturan
+
+```bash
+codex "Say hello"
+```
+
+## Butuh Bantuan?
+
+- [Dashboard KiosAPI](https://kiosapi.com)
+- [Panduan Manajemen Token](/token-management/usage)
+- [Model Tersedia](../api-reference/models/list-models)

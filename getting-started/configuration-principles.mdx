@@ -1,0 +1,45 @@
+---
+title: Configuration Principles
+description: Rules for choosing the correct KiosAPI base URL, protocol, authentication header, and model ID.
+---
+
+# Configuration Principles
+
+Most integration failures come from mixing a correct value with the wrong protocol. Verify the following four values together.
+
+## Choose the protocol first
+
+| Client or SDK | Protocol | Base URL or endpoint |
+|---|---|---|
+| OpenAI SDK, Codex, OpenCode, most chat clients | OpenAI compatible | `https://kiosapi.com/v1` |
+| Claude Code, Anthropic SDK | Anthropic Messages | `https://kiosapi.com` with `/v1/messages` |
+| Google GenAI SDK, Gemini-compatible clients | Gemini native | `https://kiosapi.com/v1beta` |
+
+## Match authentication to the protocol
+
+| Protocol | Required header |
+|---|---|
+| OpenAI compatible | `Authorization: Bearer sk-xxx` |
+| Anthropic Messages | `x-api-key: sk-xxx` and `anthropic-version: 2023-06-01` |
+| Gemini native | `x-goog-api-key: sk-xxx` |
+
+## Respect how the client handles `/v1`
+
+Some clients expect a host and append `/v1` themselves. Others expect the complete OpenAI API root. If requests contain `/v1/v1`, remove `/v1` from the configured host. If requests miss `/v1`, use `https://kiosapi.com/v1`.
+
+## Use exact model IDs
+
+Do not guess model names. Retrieve the currently available IDs:
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY"
+```
+
+## Test before configuring a complex client
+
+Use a small curl request first. A successful curl request proves the token, model, route, and network path are valid. Then copy the same values into the target client.
+
+<Warning>
+Never send a KiosAPI token to OpenAI, Anthropic, Google, or any unrelated host. KiosAPI tokens are intended only for `kiosapi.com`.
+</Warning>

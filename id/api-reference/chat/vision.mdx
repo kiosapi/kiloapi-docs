@@ -1,0 +1,130 @@
+---
+title: Obrolan - Analisis Gambar (Visi)
+description: Analisis gambar menggunakan model obrolan berkemampuan penglihatan
+---
+
+# Obrolan - Analisis Gambar
+
+Kirim gambar untuk dianalisis menggunakan model berkemampuan penglihatan. Model harus mendukung analisis gambar (misalnya `gpt-4o`, `gpt-4-vision-preview`).
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Model berkemampuan penglihatan (misalnya `gpt-4o`)|
+|`messages`|array|Ya|Array objek pesan dengan konten multimodal|
+|`messages[].role`|string|Ya|Peran: `user`|
+|`messages[].content`|array|Ya|Array objek teks dan gambar|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2)|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+
+### Jenis Konten
+
+Array `content` mendukung:
+
+|Jenis|Bidang|Deskripsi|
+|------|--------|-------------|
+|`text`|`text`|Perintah teks|
+|`image_url`|`image_url.url`|URL Gambar (mendukung base64 dan URL web)|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "What is in this image?"
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "https://example.com/image.png"
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 300
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "What is in this image?"},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": "https://example.com/image.png"}
+                }
+            ]
+        }
+    ],
+    max_tokens=300,
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+URL gambar mendukung URI data base64 dan URL web. Format Base64: `data:image/png;base64,iVBOR...`
+</Tip>
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-A7ETdn5hnbTjpw9dtRifjMFZYcdFW",
+  "object": "chat.completion",
+  "created": 1726287309,
+  "model": "gpt-4o-2024-05-13",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "This image shows a cartoon-style portrait of an elderly man...",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 265,
+    "completion_tokens": 46,
+    "total_tokens": 311
+  },
+  "system_fingerprint": "fp_992d1ea92d"
+}
+```

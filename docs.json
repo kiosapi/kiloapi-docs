@@ -1,151 +1,174 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "KiloAPI",
+  "name": "KiosAPI",
+  "description": "KiosAPI developer documentation",
   "colors": {
-    "primary": "#6366f1",
-    "light": "#818cf8",
-    "dark": "#4f46e5"
+    "primary": "#2563EB",
+    "light": "#3B82F6",
+    "dark": "#1D4ED8"
   },
   "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Documentation",
-        "groups": [
-          {
-            "group": "Introduction",
-            "pages": [
-              "introduction",
-              "authentication",
-              "api-base-url"
-            ]
-          },
-          {
-            "group": "Getting Started",
-            "pages": [
-              "getting-started/quickstart",
-              "getting-started/openai-sdk",
-              "getting-started/concurrency"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Model Information",
-            "pages": [
-              "api-reference/models/list-models",
-              "api-reference/models/list-single-model"
-            ]
-          },
-          {
-            "group": "Chat Models",
-            "pages": [
-              "api-reference/chat/general",
-              "api-reference/chat/vision",
-              "api-reference/chat/function-calling",
-              "api-reference/chat/o1-o3",
-              "api-reference/chat/gpt-4o-all",
-              "api-reference/chat/gpt-4-all",
-              "api-reference/chat/completions",
-              "api-reference/chat/claude-openai",
-              "api-reference/chat/claude-native",
-              "api-reference/chat/gemini-openai",
-              "api-reference/chat/gemini-native",
-              "api-reference/chat/gpts"
-            ]
-          },
-          {
-            "group": "Content Moderation",
-            "pages": [
-              "api-reference/moderation/text",
-              "api-reference/moderation/image"
-            ]
-          },
-          {
-            "group": "Embeddings & Rerank",
-            "pages": [
-              "api-reference/embeddings/create",
-              "api-reference/rerank/text-rerank"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Tutorials",
-        "groups": [
-          {
-            "group": "Tutorials",
-            "pages": [
-              "tutorials/claude-code",
-              "tutorials/codex",
-              "tutorials/gemini-cli",
-              "tutorials/openclaw",
-              "tutorials/opencode",
-              "tutorials/trae",
-              "tutorials/cc-switch"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Token Management",
-        "groups": [
-          {
-            "group": "Token Management",
-            "pages": [
-              "token-management/usage",
-              "token-management/quota",
-              "token-management/account"
-            ]
-          }
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Dashboard",
-          "href": "https://kiosapi.com",
-          "icon": "gauge"
-        },
-        {
-          "anchor": "Pricing",
-          "href": "https://kiosapi.com/pricing",
-          "icon": "credit-card"
-        },
-        {
-          "anchor": "Models",
-          "href": "https://kiosapi.com/pricing",
-          "icon": "brain"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/kiosapi",
-          "icon": "github"
-        }
-      ]
-    }
-  },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
   "navbar": {
     "links": [
-      {
-        "label": "Pricing",
-        "href": "https://kiosapi.com/pricing"
-      }
+      { "label": "Models & Pricing", "href": "https://kiosapi.com/pricing" },
+      { "label": "GitHub", "href": "https://github.com/kiosapi" }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
+      "label": "Open Dashboard",
       "href": "https://kiosapi.com"
     }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        { "anchor": "Dashboard", "href": "https://kiosapi.com", "icon": "gauge" },
+        { "anchor": "Models & Pricing", "href": "https://kiosapi.com/pricing", "icon": "credit-card" },
+        { "anchor": "GitHub", "href": "https://github.com/kiosapi", "icon": "github" }
+      ]
+    },
+    "languages": [
+      {
+        "language": "en",
+        "default": true,
+        "groups": [
+          {
+            "group": "Quick Start",
+            "pages": [
+              "introduction",
+              "getting-started/register",
+              "authentication",
+              "api-base-url",
+              "getting-started/quickstart",
+              "getting-started/configuration-principles"
+            ]
+          },
+          {
+            "group": "SDKs & Tools",
+            "pages": [
+              "getting-started/openai-sdk",
+              "getting-started/concurrency",
+              "tutorials/cc-switch",
+              "tutorials/claude-code",
+              "tutorials/codex",
+              "tutorials/gemini-cli",
+              "tutorials/opencode",
+              "tutorials/openclaw",
+              "tutorials/trae",
+              "tutorials/hermes-agent",
+              "tutorials/curl"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "api-reference/models/list-models",
+              "api-reference/models/list-single-model",
+              "api-reference/chat/general",
+              "api-reference/chat/vision",
+              "api-reference/chat/function-calling",
+              "api-reference/chat/o1-o3",
+              "api-reference/chat/claude-openai",
+              "api-reference/chat/claude-native",
+              "api-reference/chat/gemini-openai",
+              "api-reference/chat/gemini-native",
+              "api-reference/chat/gpt-4o-all",
+              "api-reference/chat/gpt-4-all",
+              "api-reference/chat/gpts",
+              "api-reference/chat/completions",
+              "api-reference/embeddings/create",
+              "api-reference/rerank/text-rerank",
+              "api-reference/moderation/text",
+              "api-reference/moderation/image"
+            ]
+          },
+          {
+            "group": "Account & Usage",
+            "pages": [
+              "token-management/usage",
+              "token-management/quota",
+              "token-management/account"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": ["troubleshooting/errors"]
+          }
+        ]
+      },
+      {
+        "language": "id",
+        "groups": [
+          {
+            "group": "Mulai Cepat",
+            "pages": [
+              "id/introduction",
+              "id/getting-started/register",
+              "id/authentication",
+              "id/api-base-url",
+              "id/getting-started/quickstart",
+              "id/getting-started/configuration-principles"
+            ]
+          },
+          {
+            "group": "SDK & Alat",
+            "pages": [
+              "id/getting-started/openai-sdk",
+              "id/getting-started/concurrency",
+              "id/tools/cc-switch",
+              "id/tools/claude-code",
+              "id/tools/codex",
+              "id/tools/gemini-cli",
+              "id/tools/opencode",
+              "id/tools/openclaw",
+              "id/tools/trae",
+              "id/tools/hermes-agent",
+              "id/tools/curl"
+            ]
+          },
+          {
+            "group": "Referensi API",
+            "pages": [
+              "id/api-reference/models/list-models",
+              "id/api-reference/models/list-single-model",
+              "id/api-reference/chat/general",
+              "id/api-reference/chat/vision",
+              "id/api-reference/chat/function-calling",
+              "id/api-reference/chat/o1-o3",
+              "id/api-reference/chat/claude-openai",
+              "id/api-reference/chat/claude-native",
+              "id/api-reference/chat/gemini-openai",
+              "id/api-reference/chat/gemini-native",
+              "id/api-reference/chat/gpt-4o-all",
+              "id/api-reference/chat/gpt-4-all",
+              "id/api-reference/chat/gpts",
+              "id/api-reference/chat/completions",
+              "id/api-reference/embeddings/create",
+              "id/api-reference/rerank/text-rerank",
+              "id/api-reference/moderation/text",
+              "id/api-reference/moderation/image"
+            ]
+          },
+          {
+            "group": "Akun & Penggunaan",
+            "pages": [
+              "id/account/usage",
+              "id/account/quota",
+              "id/account/account"
+            ]
+          },
+          {
+            "group": "Pemecahan Masalah",
+            "pages": ["id/troubleshooting/errors"]
+          }
+        ]
+      }
+    ]
   },
   "footer": {
     "socials": {

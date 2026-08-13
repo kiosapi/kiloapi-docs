@@ -1,0 +1,50 @@
+---
+title: Configure Hermes Agent with KiosAPI
+description: Connect Hermes Agent to KiosAPI through an OpenAI-compatible custom provider.
+---
+
+# Configure Hermes Agent with KiosAPI
+
+Hermes Agent can use KiosAPI through an OpenAI-compatible custom provider. The exact configuration fields may change between Hermes releases, so use the current Hermes setup or provider configuration interface and apply the values below.
+
+## Required values
+
+| Setting | Value |
+|---|---|
+| Provider type | OpenAI compatible / custom OpenAI |
+| Base URL | `https://kiosapi.com/v1` |
+| API key | Your KiosAPI token, for example `sk-xxx` |
+| Model | An exact ID returned by `GET /v1/models` |
+
+## Verify the model list
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY"
+```
+
+Choose a model intended for tool use and coding workflows. Availability and pricing are shown on the live [Models & Pricing](https://kiosapi.com/pricing) page.
+
+## Configure the provider
+
+1. Open Hermes provider/model configuration.
+2. Add a custom OpenAI-compatible provider.
+3. Enter `https://kiosapi.com/v1` as the base URL.
+4. Store the KiosAPI key in the provider credential field or configured environment variable.
+5. Add the selected model ID and make it active for the target Hermes profile.
+6. Restart the affected Hermes gateway or session if the configuration interface requires it.
+
+## Test the connection
+
+Start a new Hermes session and send a short prompt that does not require tools. If it fails, compare the configured model ID with `GET /v1/models`, then run the [cURL test](/tutorials/curl).
+
+<Warning>
+Do not place an API key in a committed config file or share a full Hermes diagnostic log without sanitizing secrets.
+</Warning>
+
+## Common problems
+
+- `401 Unauthorized`: key missing, revoked, or stored under the wrong provider.
+- `404 Not Found`: invalid model ID or incorrect base URL.
+- `/v1/v1/...`: Hermes/provider adapter appended `/v1`; set the configured host to `https://kiosapi.com`.
+- Model responds but tools fail: select a model that supports tool calling and verify the Hermes tool configuration separately.

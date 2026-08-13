@@ -1,0 +1,144 @@
+---
+title: CC Switch
+description: Konfigurasikan CC Switch untuk menggunakan KiosAPI sebagai penyedia backend Claude Code.
+---
+
+# CC Switch
+
+[CC Switch](https://github.com/farion1231/cc-switch) adalah alat untuk berpindah antarpenyedia API Claude Code. Panduan ini menjelaskan konfigurasi KiosAPI.
+
+## Prasyarat
+
+- [Claude Code](/tutorials/claude-code) telah diinstal dan dikonfigurasi
+- **Kunci API KiosAPI** (diawali dengan `sk-`)
+- **Node.js 18+**
+
+## Instalasi
+
+Instal CC Switch secara global:
+
+```bash
+npm install -g cc-switch
+```
+
+Verifikasi instalasi:
+
+```bash
+cc-switch --version
+```
+
+## Konfigurasi
+
+### 1. Tambahkan KiosAPI sebagai penyedia
+
+Buat atau edit file konfigurasi CC Switch:
+
+| Platform | Lokasi Konfigurasi |
+|----------|-------------|
+| Windows | `C:\Users\<username>\.cc-switch\config.json` |
+| macOS | `/Users/<username>/.cc-switch/config.json` |
+| Linux | `/home/<username>/.cc-switch/config.json` |
+
+```json
+{
+  "providers": {
+    "kiosapi": {
+      "name": "KiosAPI",
+      "baseUrl": "https://kiosapi.com",
+      "apiKey": "sk-xxx",
+      "model": "claude-sonnet-4-6",
+      "smallFastModel": "claude-haiku-4-5-20251001",
+      "disableBetas": true
+    }
+  },
+  "default": "kiosapi"
+}
+```
+
+Ganti `sk-xxx` dengan kunci KiosAPI Anda yang sebenarnya.
+
+<Info>
+  Atur `"baseUrl"` ke `https://kiosapi.com` (tanpa `/v1`). Claude Code menambahkan jalur API secara otomatis.
+</Info>
+
+### 2. Atur variabel lingkungan (alternatif)
+
+Anda juga dapat mengonfigurasi CC Switch dengan mengatur variabel lingkungan secara langsung:
+
+**Windows (PowerShell):**
+
+```powershell
+setx ANTHROPIC_BASE_URL "https://kiosapi.com"
+setx ANTHROPIC_AUTH_TOKEN "sk-xxx"
+```
+
+**macOS / Linux:**
+
+Tambahkan ke `~/.bashrc` atau `~/.zshrc`:
+
+```bash
+export ANTHROPIC_BASE_URL="https://kiosapi.com"
+export ANTHROPIC_AUTH_TOKEN="sk-xxx"
+```
+
+## Penggunaan
+
+### Beralih ke KiosAPI
+
+```bash
+cc-switch use kiosapi
+```
+
+### Beralih kembali ke penyedia lain
+
+```bash
+cc-switch use anthropic
+```
+
+### Tampilkan penyedia saat ini
+
+```bash
+cc-switch current
+```
+
+### Daftar penyedia yang tersedia
+
+```bash
+cc-switch list
+```
+
+## Verifikasi Pengaturan
+
+Setelah beralih ke KiosAPI, uji konfigurasi:
+
+```bash
+claude "Say hello"
+```
+
+Jika Claude merespons, CC Switch telah merutekan permintaan melalui KiosAPI dengan benar.
+
+<Tip>
+  Gunakan grup token **`claude_cc`** di KiosAPI untuk harga terbaik saat memakai Claude Code.
+</Tip>
+
+## Pemecahan Masalah
+
+### Penyedia tidak ditemukan
+
+- Pastikan nama penyedia dalam `cc-switch use <name>` sesuai dengan kunci di `config.json`
+- Periksa lokasi file konfigurasi sesuai platform Anda
+
+### Kesalahan autentikasi setelah beralih
+
+- Pastikan `apiKey` dalam konfigurasi benar dan diawali dengan `sk-`
+- Pastikan `baseUrl` adalah `https://kiosapi.com` (tanpa garis miring akhir dan `/v1`)
+
+### Flag Beta Tidak Valid
+
+Jika muncul kesalahan `400` terkait flag beta, pastikan `"disableBetas": true` diatur dalam konfigurasi penyedia. Ini menambahkan `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` ke lingkungan.
+
+## Butuh Bantuan?
+
+- [Panduan Penyiapan Claude Code](/tutorials/claude-code)
+- [KiosAPI Dashboard](https://kiosapi.com)
+- [Model Tersedia](../api-reference/models/list-models)

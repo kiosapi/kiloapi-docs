@@ -1,0 +1,44 @@
+---
+title: Account, Balance, and API Key
+description: Create your KiosAPI account, prepare a balance, and generate a secure API key.
+---
+
+# Account, Balance, and API Key
+
+Complete these account steps before configuring an SDK or client.
+
+## Create an account
+
+1. Open the [KiosAPI Dashboard](https://kiosapi.com).
+2. Register or sign in using the methods currently shown on the website.
+3. Review the live model and pricing page before funding the account.
+
+## Prepare a balance
+
+Open the billing or top-up section in the dashboard and use one of the available payment methods. Model availability, rates, and billing units may change, so use the live [Models & Pricing](https://kiosapi.com/pricing) page as the source of truth.
+
+<Warning>
+Start with a small balance and a short test request. Do not estimate production cost from old screenshots or cached pricing tables.
+</Warning>
+
+## Create an API key
+
+1. Open **Token Management** in the dashboard.
+2. Create a token with an appropriate name and limit.
+3. Copy the key when it is shown and store it in a secret manager or environment variable.
+4. Use the token only with `kiosapi.com` endpoints.
+
+```bash
+export KIOSAPI_API_KEY="sk-xxx"
+```
+
+<Info>
+A token can usually be limited by quota or expiration. Use separate tokens for development, production, and each external client so they can be revoked independently.
+</Info>
+
+## Before your first request
+
+- Confirm that the token is active.
+- Copy a model ID from the live model list or call `GET /v1/models`.
+- Start with `https://kiosapi.com/v1` for OpenAI-compatible clients.
+- Never expose a token in browser-side code, screenshots, public logs, or Git commits.

@@ -1,0 +1,106 @@
+---
+title: Obrolan - Model Seri o1/o3
+description: Gunakan model penalaran OpenAI o1/o3
+---
+
+# Obrolan - Model Seri o1/o3
+
+Model seri o1 mendukung kemampuan penalaran. Mereka menggunakan titik akhir `/v1/chat/completions` yang sama tetapi dengan beberapa perbedaan.
+
+<Tip>
+Model seri o1 **tidak** mendukung keluaran streaming. Selalu atur `stream: false`.
+</Tip>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model: `o1-mini`, `o1-preview`, `o3`, `o3-mini`, dll.|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `user` (tidak ada peran `system` yang didukung)|
+|`messages[].content`|string|Ya|Isi pesan|
+|`max_completion_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`stream`|boolean| Tidak |Harus `false`|
+
+<Warning>
+Model seri o1/o3 **tidak** mendukung peran `system`. Hanya gunakan peran `user` dan `assistant`.
+</Warning>
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "o1-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Explain quantum computing in simple terms"
+      }
+    ],
+    "max_completion_tokens": 1688,
+    "stream": false
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="o1-mini",
+    messages=[
+        {"role": "user", "content": "Explain quantum computing in simple terms"}
+    ],
+    max_completion_tokens=1688,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-A1iMgDLzZtUJ9QDpfqDLxKH0zfUnp",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "o1-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing is a type of computation...",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 150,
+    "total_tokens": 159
+  },
+  "system_fingerprint": "fp_157b3831f5"
+}
+```

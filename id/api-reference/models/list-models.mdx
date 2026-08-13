@@ -1,0 +1,71 @@
+---
+title: Daftar Model yang Tersedia
+description: Cantumkan semua model yang tersedia untuk kunci API Anda
+---
+
+# Daftar Model yang Tersedia
+
+Ambil daftar model yang tersedia untuk kunci API Anda. Grup token yang berbeda mungkin memiliki akses ke model yang berbeda. Jika token mengaktifkan "grup otomatis", model di luar grup yang dipilih juga akan ditampilkan.
+
+<Info>
+Semua model obrolan (termasuk model non-OpenAI) mendukung perpustakaan resmi OpenAI. URL dan format permintaan harus mengikuti gaya permintaan OpenAI.
+</Info>
+
+## Permintaan
+
+<Method method="GET" url="https://kiosapi.com/v1/models" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`| No* |`Bearer sk-xxx` (format OpenAI)|
+|`x-api-key`| No* |`sk-xxx` (Format antropik)|
+|`anthropic-version`| No* |`2023-06-01` (Format antropik)|
+|`x-goog-api-key`| No* |`sk-xxx` (format Google)|
+
+<Info>
+*Setidaknya diperlukan satu metode autentikasi. Pilih berdasarkan format respons yang Anda inginkan.
+</Info>
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json"
+```
+
+## Respons
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "gpt-4o",
+      "object": "model",
+      "created": 1686935002,
+      "owned_by": "openai"
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "object": "model",
+      "created": 1686935002,
+      "owned_by": "anthropic"
+    }
+  ]
+}
+```
+
+### Skema Respons
+
+|Bidang|Tipe|Deskripsi|
+|-------|------|-------------|
+|`object`|string|Selalu `list`|
+|`data`|array|Array objek model|
+|`data[].id`|string|Nama/ID model|
+|`data[].object`|string|Selalu `model`|
+|`data[].created`|integer|Stempel waktu Unix|
+|`data[].owned_by`|string|Penyedia model|

@@ -1,0 +1,200 @@
+---
+title: Gemini (Format OpenAI) - Analisis File
+description: Gunakan model Gemini melalui format OpenAI dengan dukungan multi-file
+---
+
+# Gemini (Format OpenAI) - Analisis File
+
+Model Gemini mendukung format permintaan OpenAI dengan kemampuan analisis file yang diperluas. Mendukung file PDF, gambar, audio, dan video.
+
+## Jenis File yang Didukung
+
+|Perpanjangan|Tipe MIME|
+|-----------|-----------|
+|`.pdf`|`application/pdf`|
+|`.mp3`|`audio/mp3`|
+|`.mp4`|`video/mp4`|
+|`.wav`|`audio/wav`|
+|`.png`|`image/png`|
+|`.jpg` / `.jpeg`|`image/jpeg`|
+|`.txt`|`text/plain`|
+|`.mov`|`video/mov`|
+|`.mpeg`|`video/mpeg`|
+|`.mpg`|`video/mpg`|
+|`.avi`|`video/avi`|
+|`.wmv`|`video/wmv`|
+|`.flv`|`video/flv`|
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model Gemini|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `user` atau `assistant`|
+|`messages[].content`|string/array|Ya|Konten teks atau multimodal|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`temperature`|number| Tidak |Suhu pengambilan sampel|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+|`tools`|array| Tidak |Alat pemanggil fungsi|
+|`reasoning_effort`|string| Tidak |Tingkat berpikir: `high`, `medium`, `low`|
+|`extra_body`|object| Tidak |Konfigurasi lanjutan (thinking_config)|
+|`response_format`|object| Tidak |Konfigurasi keluaran terstruktur|
+
+### Tipe Konten untuk Analisis File
+
+|Jenis|Bidang|Deskripsi|
+|------|--------|-------------|
+|`text`|`text`|Perintah teks|
+|`file`|`file.filename`, `file.file_data`|File (base64 atau URL)|
+|`file_url`|`file_url.url`|URL file (mendukung gambar dan file)|
+|`image_url`|`image_url.url`|URL gambar (base64 atau URL web)|
+
+<Tip>
+Untuk file lebih dari 20 MB, gunakan metode URL, bukan base64.
+</Tip>
+
+### Model Berpikir Dinamis
+
+Jika nama model diakhiri dengan `thinking-*` (misalnya `gemini-2.5-flash-thinking-2000`), ini mendukung batas token pemikiran dinamis. Angka setelah `thinking-` menetapkan token pemikiran maksimal.
+
+### Pencarian Web
+
+Aktifkan penelusuran web dengan:
+1. Menambahkan akhiran `-search` ke nama model (misalnya `gemini-2.5-flash-search`)
+2. Menambahkan alat `googleSearch`:
+
+```json
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {"name": "googleSearch"}
+    }
+  ]
+}
+```
+
+### Contoh Permintaan - Obrolan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gemini-2.5-pro",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Contoh Permintaan - Analisis File
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gemini-2.5-pro",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Summarize this document"
+          },
+          {
+            "type": "file",
+            "file": {
+              "filename": "document.pdf",
+              "file_data": "data:application/pdf;base64,JVBERi0xLjQK..."
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 6000,
+    "stream": false
+  }'
+```
+
+### Contoh Python - Pencarian Web
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gemini-2.5-flash-search",
+    messages=[{"role": "user", "content": "What is today's date?"}],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+### Contoh Python - Memikirkan Anggaran
+
+```python
+response = openai.chat.completions.create(
+    model="gemini-2.5-flash",
+    messages=[{"role": "user", "content": "Complex reasoning task..."}],
+    max_tokens=8000,
+    extra_body={
+        "google": {
+            "thinking_config": {
+                "include_thoughts": True,
+                "thinking_budget": 8192
+            }
+        }
+    }
+)
+```
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! I'm Gemini, a multilingual AI model..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 38,
+    "total_tokens": 50
+  }
+}
+```

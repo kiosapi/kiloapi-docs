@@ -1,0 +1,126 @@
+---
+title: Pemeringkatan Ulang Teks
+description: Susun ulang dokumen berdasarkan relevansinya dengan kueri
+---
+
+# Pemeringkatan Ulang Teks
+
+Titik akhir pemeringkatan ulang membantu Anda dengan cepat mencocokkan dokumen yang relevan dari kumpulan dokumen kompleks berdasarkan kueri.
+
+<Tip>
+Pemeringkatan ulang berguna untuk meningkatkan hasil pencarian: pertama-tama ambil dokumen kandidat dengan pencarian vektor, lalu rangking ulang dokumen tersebut untuk pengurutan relevansi yang lebih baik.
+</Tip>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/rerank" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Ubah peringkat nama model (misalnya `gte-rerank-v2`)|
+|`query`|string|Ya|Teks kueri untuk dicocokkan dengan dokumen|
+|`documents`|array|Ya|Array string dokumen kandidat|
+|`top_n`|integer| Tidak |Jumlah dokumen teratas yang akan dikembalikan (default: semua)|
+|`return_documents`|boolean| Tidak |Apakah akan mengembalikan teks dokumen (default: `false`)|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/rerank \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gte-rerank-v2",
+    "query": "What is a text reranking model",
+    "documents": [
+      "Text reranking models are widely used in search engines and recommendation systems, ranking candidate texts by text relevance",
+      "Quantum computing is a frontier field in computational science",
+      "The development of pre-trained language models has brought new progress to text reranking models"
+    ],
+    "return_documents": true,
+    "top_n": 5
+  }'
+```
+
+### Contoh Python
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1/rerank"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer sk-xxx"
+}
+data = {
+    "model": "gte-rerank-v2",
+    "query": "What is a text reranking model",
+    "documents": [
+        "Text reranking models are widely used in search engines",
+        "Quantum computing is a frontier field",
+        "Pre-trained models brought progress to reranking"
+    ],
+    "return_documents": True,
+    "top_n": 5
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+
+for r in result["results"]:
+    print(f"Index: {r['index']}, Score: {r['relevance_score']:.4f}")
+```
+
+## Respons
+
+```json
+{
+  "results": [
+    {
+      "document": {
+        "text": "Text reranking models are widely used in search engines and recommendation systems, ranking candidate texts by text relevance"
+      },
+      "index": 0,
+      "relevance_score": 0.9334521178273196
+    },
+    {
+      "document": {
+        "text": "The development of pre-trained language models has brought new progress to text reranking models"
+      },
+      "index": 2,
+      "relevance_score": 0.34100082626411193
+    },
+    {
+      "document": {
+        "text": "Quantum computing is a frontier field in computational science"
+      },
+      "index": 1,
+      "relevance_score": 0.005814161578735119
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 79,
+    "total_tokens": 79
+  }
+}
+```
+
+### Skema Respons
+
+|Bidang|Tipe|Deskripsi|
+|-------|------|-------------|
+|`results`|array|Array hasil peringkat|
+|`results[].document.text`|string|Teks dokumen asli (jika `return_documents: true`)|
+|`results[].index`|integer|Indeks dalam susunan dokumen asli|
+|`results[].relevance_score`|number|Skor relevansi (0-1, lebih tinggi = lebih relevan)|
+|`usage.prompt_tokens`|integer|Token masukan|
+|`usage.total_tokens`|integer|Jumlah token|

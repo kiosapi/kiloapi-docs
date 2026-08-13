@@ -1,0 +1,85 @@
+---
+title: Trae
+description: Konfigurasikan editor kode AI Trae untuk menggunakan KiosAPI sebagai penyedia backend.
+---
+
+# Trae
+
+[Trae](https://www.trae.ai/) adalah editor kode bertenaga AI dari ByteDance. Panduan ini menjelaskan cara mengonfigurasikannya agar menggunakan KiosAPI, bukan penyedia default.
+
+## Prasyarat
+
+- [Unduh dan instal Trae](https://www.trae.ai/)
+- **Kunci API KiosAPI** (diawali dengan `sk-`)
+
+## Konfigurasi
+
+### 1. Buka Pengaturan Trae
+
+1. Jalankan Trae
+2. Buka Settings (`Ctrl + ,` di Windows / `Cmd + ,` di macOS)
+3. Cari **AI Provider** atau buka **Settings → AI Settings**
+
+### 2. Konfigurasikan Penyedia Kustom
+
+Atur nilai berikut dalam konfigurasi penyedia kustom:
+
+| Kolom | Nilai |
+|-------|-------|
+| **API Base URL** | `https://kiosapi.com/v1` |
+| **Kunci API** | `sk-xxx` |
+| **Model** | `gpt-4o` atau model apa pun yang tersedia di KiosAPI |
+
+<Info>
+  Trae mendukung penyedia yang kompatibel dengan OpenAI. KiosAPI sepenuhnya kompatibel dengan OpenAI, sehingga dapat digunakan sebagai pengganti langsung.
+</Info>
+
+### 3. Atur variabel lingkungan (alternatif)
+
+Anda juga dapat mengatur variabel lingkungan jika Trae membacanya dari shell:
+
+**Windows (PowerShell):**
+
+```powershell
+setx OPENAI_API_KEY "sk-xxx"
+setx OPENAI_BASE_URL "https://kiosapi.com/v1"
+```
+
+**macOS / Linux:**
+
+Tambahkan ke `~/.bashrc` atau `~/.zshrc`:
+
+```bash
+export OPENAI_API_KEY="sk-xxx"
+export OPENAI_BASE_URL="https://kiosapi.com/v1"
+```
+
+### 4. Pilih penyedia kustom
+
+Di panel chat Trae atau pengaturan penyelesaian inline, pilih penyedia kustom Anda sebagai backend AI aktif.
+
+## Penggunaan
+
+Setelah dikonfigurasi, Anda dapat menggunakan fitur AI Trae (chat, penyelesaian inline, pembuatan kode) dengan KiosAPI sebagai backend.
+
+<Tip>
+  Untuk hasil terbaik pada tugas coding, gunakan model seperti `gpt-4o`, `claude-sonnet-4-6`, atau `deepseek-chat`. Periksa [daftar model](../api-reference/models/list-models) untuk semua opsi yang tersedia.
+</Tip>
+
+## Pemecahan Masalah
+
+### Fitur AI tidak berfungsi
+
+- Pastikan kunci API benar dan diawali dengan `sk-`
+- Pastikan URL dasar adalah `https://kiosapi.com/v1` (dengan `/v1`)
+- Mulai ulang Trae setelah mengubah pengaturan
+
+### Model tidak tersedia
+
+- Periksa bahwa nama model didukung oleh KiosAPI
+- Pastikan grup token Anda mencakup model yang diinginkan
+
+## Butuh Bantuan?
+
+- [KiosAPI Dashboard](https://kiosapi.com)
+- [Model Tersedia](../api-reference/models/list-models)

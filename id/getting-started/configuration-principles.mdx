@@ -1,0 +1,45 @@
+---
+title: Prinsip Konfigurasi
+description: Aturan memilih base URL, protokol, header autentikasi, dan ID model KiosAPI yang benar.
+---
+
+# Prinsip Konfigurasi
+
+Sebagian besar kegagalan integrasi terjadi karena nilai yang benar dipakai pada protokol yang salah. Periksa empat bagian berikut sebagai satu kesatuan.
+
+## Tentukan protokol terlebih dahulu
+
+| Klien atau SDK | Protokol | Base URL atau endpoint |
+|---|---|---|
+| OpenAI SDK, Codex, OpenCode, mayoritas klien chat | OpenAI compatible | `https://kiosapi.com/v1` |
+| Claude Code, Anthropic SDK | Anthropic Messages | `https://kiosapi.com` dengan `/v1/messages` |
+| Google GenAI SDK, klien Gemini | Gemini native | `https://kiosapi.com/v1beta` |
+
+## Cocokkan autentikasi dengan protokol
+
+| Protokol | Header wajib |
+|---|---|
+| OpenAI compatible | `Authorization: Bearer sk-xxx` |
+| Anthropic Messages | `x-api-key: sk-xxx` dan `anthropic-version: 2023-06-01` |
+| Gemini native | `x-goog-api-key: sk-xxx` |
+
+## Perhatikan cara klien menangani `/v1`
+
+Sebagian klien meminta host lalu menambahkan `/v1` sendiri. Klien lain meminta root API OpenAI lengkap. Jika URL request menjadi `/v1/v1`, hapus `/v1` dari konfigurasi host. Jika `/v1` hilang, gunakan `https://kiosapi.com/v1`.
+
+## Gunakan ID model yang persis
+
+Jangan menebak nama model. Ambil daftar ID yang tersedia saat ini:
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY"
+```
+
+## Uji sebelum mengatur klien yang kompleks
+
+Jalankan request curl kecil terlebih dahulu. Curl yang berhasil membuktikan token, model, route, dan koneksi jaringan sudah benar. Setelah itu pindahkan nilai yang sama ke klien tujuan.
+
+<Warning>
+Jangan pernah mengirim token KiosAPI ke OpenAI, Anthropic, Google, atau host lain. Token KiosAPI hanya digunakan untuk `kiosapi.com`.
+</Warning>

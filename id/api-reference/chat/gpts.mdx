@@ -1,0 +1,114 @@
+---
+title: GPT
+description: Hubungi GPT OpenAI melalui API
+---
+
+# GPT
+
+Anda dapat memanggil semua GPT yang tersedia di situs OpenAI melalui API. Telusuri GPT yang tersedia di [GPTs Hunter](https://www.gptshunter.com/).
+
+## Cara Menggunakan
+
+Untuk menggunakan GPT, teruskan ID-nya sebagai nama model dengan awalan `gpt-4-gizmo-`.
+
+### Menemukan ID GPT
+
+Dari URL GPT seperti `https://chat.openai.com/g/g-bo0FiWLY7-researchgpt`, nama modelnya adalah:
+
+```
+gpt-4-gizmo-g-bo0FiWLY7
+```
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model GPT: `gpt-4-gizmo-{gizmo_id}`|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `system` atau `user`|
+|`messages[].content`|string|Ya|Isi pesan|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2)|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4-gizmo-g-bo0FiWLY7",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is the potential of quantum computing?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4-gizmo-g-bo0FiWLY7",
+    messages=[
+        {"role": "user", "content": "What is the potential of quantum computing?"}
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+Jika Anda menggunakan uTools `GPT Friend plugin`, Anda dapat menempelkan seluruh URL GPT ke kolom nama model plugin, dan nama model akan diekstrak secara otomatis.
+</Tip>
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-89DbGj4xWTyI7ddcPHTqDolMi0MGn",
+  "object": "chat.completion",
+  "created": 1724999207,
+  "model": "gpt-4-gizmo",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing shows tremendous potential..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 30,
+    "completion_tokens": 835,
+    "total_tokens": 865
+  }
+}
+```

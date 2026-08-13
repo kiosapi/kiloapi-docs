@@ -1,0 +1,37 @@
+---
+title: Pendahuluan
+description: Mulai menggunakan KiosAPI, gateway API dengan format yang kompatibel dengan OpenAI.
+---
+
+# Pendahuluan
+
+Selamat datang di **KiosAPI**. KiosAPI menyediakan satu alamat API untuk aplikasi yang menggunakan format OpenAI, serta endpoint native untuk Claude dan Gemini.
+
+Alur penggunaan dasarnya:
+
+1. Buat akun di [kiosapi.com](https://kiosapi.com).
+2. Buat API key dari dashboard.
+3. Atur base URL dan header autentikasi di aplikasi Anda.
+4. Kirim permintaan ke endpoint yang sesuai dengan format request Anda.
+
+## Format dan endpoint
+
+| Format | Endpoint | Header utama |
+|---|---|---|
+| OpenAI Chat Completions | `/v1/chat/completions` | `Authorization: Bearer <API_KEY>` |
+| OpenAI Responses | `/v1/responses` | `Authorization: Bearer <API_KEY>` |
+| Claude native | `/v1/messages` | `x-api-key: <API_KEY>` dan `anthropic-version` |
+| Gemini native | `/v1beta/models/{model}:generateContent` | `x-goog-api-key: <API_KEY>` |
+
+Endpoint yang Anda pilih menentukan bentuk payload dan header yang digunakan. Jangan mencampur format request atau metode autentikasi antar-endpoint.
+
+<Tip title="Mulai cepat">
+  Untuk aplikasi yang sudah menggunakan OpenAI SDK, gunakan `https://kiosapi.com/v1/` sebagai `base_url` dan API key KiosAPI sebagai kredensial.
+</Tip>
+
+## Sumber daya berikutnya
+
+- [Daftar dan siapkan akun](./getting-started/register) — alur pendaftaran dan API key.
+- [Autentikasi](./authentication) — header untuk setiap format API.
+- [API Base URL](./api-base-url) — aturan konfigurasi alamat API.
+- [Quickstart](./getting-started/quickstart) — kirim permintaan pertama.

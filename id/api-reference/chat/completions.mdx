@@ -1,0 +1,80 @@
+---
+title: Obrolan - Penyelesaian (Warisan)
+description: Titik akhir penyelesaian teks lama
+---
+
+# Obrolan - Penyelesaian (Warisan)
+
+Titik akhir penyelesaian lama untuk penyelesaian teks. Ini adalah format OpenAI lama yang mendahului API penyelesaian obrolan.
+
+<Info>
+Untuk sebagian besar kasus penggunaan, pilih titik akhir `/v1/chat/completions`. Titik akhir ini disediakan untuk kompatibilitas ke belakang.
+</Info>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model (misalnya `gpt-3.5-turbo-instruct`)|
+|`prompt`|string|Ya|Perintah masukan teks|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2)|
+|`top_p`|number| Tidak |Pengambilan sampel inti|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`n`|number| Tidak |Jumlah penyelesaian|
+|`presence_penalty`|number| Tidak | -2.0 to 2.0 |
+|`frequency_penalty`|number| Tidak | -2.0 to 2.0 |
+|`logprobs`|number| Tidak |Kembalikan probabilitas log token|
+|`user`|string| Tidak |Pengidentifikasi pengguna akhir|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-3.5-turbo-instruct",
+    "prompt": "The weather is very nice today",
+    "temperature": 0.7,
+    "max_tokens": 100,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0
+  }'
+```
+
+## Respons
+
+```json
+{
+  "id": "cmpl-A1tJLfyQgj1j2GpvhA6QcMCZKwRtw",
+  "object": "text_completion",
+  "created": 1725014307,
+  "model": "gpt-3.5-turbo-instruct",
+  "choices": [
+    {
+      "text": ", perfect for going out\n\nYes, the weather is very good today, perfect for a trip.",
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6,
+    "completion_tokens": 25,
+    "total_tokens": 31
+  }
+}
+```

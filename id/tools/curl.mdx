@@ -1,0 +1,122 @@
+---
+title: curl
+description: Panggil KiosAPI langsung dengan curl melalui endpoint yang kompatibel dengan OpenAI, Anthropic, dan Gemini.
+---
+
+# curl
+
+Gunakan `curl` untuk menguji KiosAPI langsung dari terminal. Contoh di bawah memakai kunci API yang dibuat di [Dashboard KiosAPI](https://kiosapi.com) melalui **Token Management**.
+
+## Prasyarat
+
+- `curl` telah terinstal
+- **Kunci API KiosAPI** (diawali dengan `sk-`)
+
+Atur kunci untuk shell saat ini:
+
+```bash
+export KIOSAPI_KEY="sk-xxx"
+```
+
+Di Windows PowerShell:
+
+```powershell
+$env:KIOSAPI_KEY = "sk-xxx"
+```
+
+<Warning>
+  Jangan commit kunci API ke source control atau menyimpannya dalam kode browser sisi klien.
+</Warning>
+
+## Chat Completions Kompatibel OpenAI
+
+Gunakan URL dasar kompatibel OpenAI `https://kiosapi.com/v1`:
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer $KIOSAPI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "user", "content": "Say hello in Indonesian."}
+    ]
+  }'
+```
+
+Teks yang dihasilkan dikembalikan dalam `choices[0].message.content`.
+
+## Daftar Model Kompatibel OpenAI
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer $KIOSAPI_KEY"
+```
+
+Gunakan ID model yang dikembalikan endpoint ini pada permintaan berikutnya.
+
+## Anthropic Messages API
+
+Untuk permintaan yang kompatibel dengan Anthropic, gunakan `https://kiosapi.com/v1/messages`:
+
+```bash
+curl https://kiosapi.com/v1/messages \
+  -H "x-api-key: $KIOSAPI_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 1024,
+    "messages": [
+      {"role": "user", "content": "Say hello in Indonesian."}
+    ]
+  }'
+```
+
+Teks yang dihasilkan dikembalikan dalam array `content` pada respons.
+
+## Gemini Generate Content API
+
+Untuk permintaan yang kompatibel dengan Gemini, gunakan URL dasar Gemini `https://kiosapi.com/v1beta`:
+
+```bash
+curl "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent?key=$KIOSAPI_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {"text": "Say hello in Indonesian."}
+        ]
+      }
+    ]
+  }'
+```
+
+Teks yang dihasilkan dikembalikan dalam `candidates[0].content.parts[0].text`.
+
+## Pemecahan Masalah
+
+### 401 Unauthorized
+
+- Pastikan kunci API diawali dengan `sk-`
+- Pastikan variabel lingkungan tersedia: `echo $KIOSAPI_KEY`
+- Buat kunci baru di Dashboard KiosAPI jika kunci sebelumnya dicabut
+
+### Model tidak ditemukan
+
+- Daftarkan model dengan `GET https://kiosapi.com/v1/models`
+- Pastikan model yang dipilih termasuk dalam grup token Anda
+- Periksa [model yang tersedia](../api-reference/models/list-models)
+
+### Kesalahan endpoint
+
+- Gunakan `https://kiosapi.com/v1` untuk endpoint yang kompatibel dengan OpenAI
+- Gunakan `https://kiosapi.com/v1/messages` untuk permintaan Anthropic Messages
+- Gunakan `https://kiosapi.com/v1beta` sebagai URL dasar Gemini
+
+## Butuh Bantuan?
+
+- [Dashboard KiosAPI](https://kiosapi.com)
+- [Panduan autentikasi](/authentication)
+- [Model Tersedia](../api-reference/models/list-models)

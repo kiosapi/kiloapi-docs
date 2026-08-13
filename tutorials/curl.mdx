@@ -1,0 +1,70 @@
+---
+title: Test KiosAPI with cURL
+description: Send a minimal OpenAI-compatible request to KiosAPI without installing an SDK.
+---
+
+# Test KiosAPI with cURL
+
+cURL is the fastest way to verify an API key, model ID, endpoint, and network path before configuring an SDK or desktop client.
+
+## Set your API key
+
+```bash
+export KIOSAPI_API_KEY="sk-xxx"
+```
+
+On Windows PowerShell, use:
+
+```powershell
+$env:KIOSAPI_API_KEY = "sk-xxx"
+```
+
+## List models
+
+```bash
+curl https://kiosapi.com/v1/models \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY"
+```
+
+Copy an available `id` from the response and use it in the next request.
+
+## Send a chat request
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [
+      {"role": "user", "content": "Reply with exactly: KiosAPI connected"}
+    ],
+    "max_tokens": 20
+  }'
+```
+
+Replace `gpt-4o-mini` if it is not present in your model list.
+
+## Enable streaming
+
+Add `"stream": true` to the JSON body:
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Authorization: Bearer $KIOSAPI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Stream a short greeting"}],
+    "stream": true
+  }'
+```
+
+## Troubleshooting
+
+- `401`: check the Bearer token and confirm it has not been revoked.
+- `404`: check the path and exact model ID.
+- `429`: check quota, balance, and rate limits.
+- `5xx`: retry with a small request or another available model.
+
+Never paste a real API key into shell history, public issues, or documentation examples.

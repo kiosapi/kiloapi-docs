@@ -1,0 +1,106 @@
+---
+title: Moderasi Teks
+description: Periksa konten teks untuk mengetahui adanya pelanggaran kebijakan
+---
+
+# Moderasi Teks
+
+Periksa apakah konten teks melanggar kebijakan penggunaan. Untuk penggunaan detailnya, lihat [Panduan Moderasi OpenAI](https://platform.openai.com/docs/guides/moderation).
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/moderations" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model moderasi (misalnya `text-moderation-latest`)|
+|`input`|string|Ya|Konten teks dimoderasi|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/moderations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "text-moderation-latest",
+    "input": "She is very beautiful, I like..."
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.moderations.create(
+    model="text-moderation-latest",
+    input="She is very beautiful, I like..."
+)
+
+print(response.results[0].flagged)
+```
+
+## Respons
+
+```json
+{
+  "id": "modr-970d409ef3bef3b70c73d8232df86e7d",
+  "model": "text-moderation-latest",
+  "results": [
+    {
+      "flagged": true,
+      "categories": {
+        "sexual": false,
+        "sexual/minors": false,
+        "harassment": false,
+        "harassment/threatening": false,
+        "hate": false,
+        "hate/threatening": false,
+        "illicit": false,
+        "illicit/violent": false,
+        "self-harm": false,
+        "self-harm/intent": false,
+        "self-harm/instructions": false,
+        "violence": true,
+        "violence/graphic": false
+      },
+      "category_scores": {
+        "sexual": 0.0000002341,
+        "violence": 0.8599265510,
+        "violence/graphic": 0.3770173639
+      }
+    }
+  ]
+}
+```
+
+### Bidang Kategori
+
+|Kategori|Deskripsi|
+|----------|-------------|
+|`sexual`|Konten seksual|
+|`sexual/minors`|Konten seksual yang melibatkan anak di bawah umur|
+|`harassment`|Gangguan|
+|`harassment/threatening`|Mengancam pelecehan|
+|`hate`|Ujaran kebencian|
+|`hate/threatening`|Mengancam ujaran kebencian|
+|`illicit`|Konten terlarang|
+|`illicit/violent`|Konten terlarang yang mengandung kekerasan|
+|`self-harm`|Menyakiti diri sendiri|
+|`self-harm/intent`|Niat menyakiti diri sendiri|
+|`self-harm/instructions`|Instruksi menyakiti diri sendiri|
+|`violence`|Kekerasan|
+|`violence/graphic`|Kekerasan grafis|

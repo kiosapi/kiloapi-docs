@@ -1,0 +1,175 @@
+---
+title: Claude (Format OpenAI) - Analisis PDF
+description: Gunakan model Claude melalui format OpenAI dengan dukungan PDF
+---
+
+# Claude (Format OpenAI) - Analisis PDF
+
+Model Claude mendukung format permintaan OpenAI dan format Antropik asli. Saat menggunakan format OpenAI, format ini sepenuhnya kompatibel dengan semua perpustakaan OpenAI.
+
+<Tip>
+Jika Anda memerlukan cache cepat, gunakan **Format asli Claude** (lihat halaman berikutnya di sidebar) sebagai gantinya. Format OpenAI tidak mendukung cache PDF.
+</Tip>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|Nama model Claude (misalnya `claude-sonnet-4-6`)|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `user` atau `assistant`|
+|`messages[].content`|string/array|Ya|Array konten teks atau multimodal|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2)|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+|`thinking`|object| Tidak |Aktifkan pemikiran yang diperluas (khusus claude-3-7-soneta)|
+|`thinking.type`|string| Tidak |Harus `enabled`|
+|`thinking.budget_tokens`|integer| Tidak |Token pemikiran maksimal (min 1024, harus < max_tokens)|
+
+### Tipe Konten untuk Analisis PDF/File
+
+Array `content` mendukung:
+
+|Jenis|Bidang|Deskripsi|
+|------|--------|-------------|
+|`text`|`text`|Perintah teks|
+|`file`|`file.filename`, `file.file_data`|File PDF (URL atau base64)|
+|`file_url`|`file_url.url`|URL file (mendukung gambar dan PDF)|
+|`image_url`|`image_url.url`|URL gambar (base64 atau URL web)|
+
+<Tip>
+Untuk base64, gunakan format: `data:application/pdf;base64,JVBERi0xLjQK...`. Claude merekomendasikan base64 untuk hasil yang lebih cepat.
+</Tip>
+
+### Contoh Permintaan - Obrolan
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, who are you?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Contoh Permintaan - Analisis PDF
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Summarize this document"
+          },
+          {
+            "type": "file_url",
+            "file_url": {
+              "url": "https://example.com/document.pdf"
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 1000,
+    "stream": false
+  }'
+```
+
+### Contoh Python - Analisis PDF
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="claude-sonnet-4-6",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Summarize this document"},
+                {
+                    "type": "file",
+                    "file": {
+                        "filename": "document.pdf",
+                        "file_data": "https://example.com/document.pdf"
+                    }
+                }
+            ]
+        }
+    ],
+    max_tokens=1000,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+### Contohnya adalah pemikiran yang diperluas
+
+```python
+response = openai.chat.completions.create(
+    model="claude-3-7-sonnet-20250219",
+    messages=[{"role": "user", "content": "Solve this complex problem..."}],
+    max_tokens=8000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 4000
+    }
+)
+```
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "model": "claude-sonnet-4-6",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! I'm Claude, an AI assistant..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 38,
+    "total_tokens": 50
+  }
+}
+```

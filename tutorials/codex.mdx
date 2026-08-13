@@ -1,11 +1,11 @@
 ---
 title: OpenAI Codex CLI
-description: Configure the OpenAI Codex CLI to use KiloAPI as the backend provider.
+description: Configure the OpenAI Codex CLI to use KiosAPI as the backend provider.
 ---
 
 # OpenAI Codex CLI
 
-[OpenAI Codex CLI](https://github.com/openai/codex) is a command-line coding agent from OpenAI. This guide walks you through configuring it to work with KiloAPI.
+[OpenAI Codex CLI](https://github.com/openai/codex) is a command-line coding agent from OpenAI. This guide walks you through configuring it to work with KiosAPI.
 
 ## System Requirements
 
@@ -38,7 +38,7 @@ codex --version
 
 ## Get Your API Key
 
-1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+1. Log in to the [KiosAPI Dashboard](https://kiosapi.com)
 2. Navigate to **Token Management**
 3. Create or copy an existing API key (starts with `sk-`)
 
@@ -49,29 +49,29 @@ codex --version
 Create `~/.codex/config.toml`:
 
 ```toml
-[model_providers.kiloapi]
-name = "KiloAPI"
+[model_providers.kiosapi]
+name = "KiosAPI"
 base_url = "https://kiosapi.com/v1"
 wire_api = "responses"
-env_key = "KILOAPI_KEY"
+env_key = "KIOSAPI_KEY"
 
-[profiles.kiloapi]
+[profiles.kiosapi]
 model = "o4-mini"
-model_provider = "kiloapi"
+model_provider = "kiosapi"
 ```
 
 <Info>
-  The `wire_api = "responses"` setting tells Codex to use OpenAI's Responses API format, which KiloAPI supports.
+  The `wire_api = "responses"` setting tells Codex to use OpenAI's Responses API format, which KiosAPI supports.
 </Info>
 
 ### 2. Set the environment variable
 
-Set your KiloAPI key as the `KILOAPI_KEY` environment variable.
+Set your KiosAPI key as the `KIOSAPI_KEY` environment variable.
 
 **Windows (PowerShell):**
 
 ```powershell
-setx KILOAPI_KEY "sk-xxx"
+setx KIOSAPI_KEY "sk-xxx"
 ```
 
 **macOS / Linux:**
@@ -79,7 +79,7 @@ setx KILOAPI_KEY "sk-xxx"
 Add to `~/.bashrc` or `~/.zshrc`:
 
 ```bash
-export KILOAPI_KEY="sk-xxx"
+export KIOSAPI_KEY="sk-xxx"
 ```
 
 Then reload:
@@ -102,18 +102,18 @@ codex
 codex "Explain how async/await works in Python"
 ```
 
-### Using the KiloAPI profile
+### Using the KiosAPI profile
 
 ```bash
-codex --profile kiloapi "Write a function to reverse a linked list"
+codex --profile kiosapi "Write a function to reverse a linked list"
 ```
 
 ## VSCode Plugin
 
-Codex is also available as a [VSCode extension](https://marketplace.visualstudio.com/items?itemName=openai.codex). After installing the extension, configure it to use KiloAPI by setting the same environment variables in your VSCode settings or terminal.
+Codex is also available as a [VSCode extension](https://marketplace.visualstudio.com/items?itemName=openai.codex). After installing the extension, configure it to use KiosAPI by setting the same environment variables in your VSCode settings or terminal.
 
 <Warning>
-  The VSCode extension reads environment variables from your shell. Make sure `KILOAPI_KEY` is exported in the shell that launches VSCode, or set it in the integrated terminal.
+  The VSCode extension reads environment variables from your shell. Make sure `KIOSAPI_KEY` is exported in the shell that launches VSCode, or set it in the integrated terminal.
 </Warning>
 
 ## Advanced Configuration
@@ -151,14 +151,14 @@ env = { GITHUB_PERSONAL_ACCESS_TOKEN = "ghp_xxx" }
 
 ### Authentication Error (401)
 
-- Verify `KILOAPI_KEY` is set correctly: `echo $KILOAPI_KEY`
+- Verify `KIOSAPI_KEY` is set correctly: `echo $KIOSAPI_KEY`
 - Ensure the key starts with `sk-`
 - Check the `env_key` in your config matches the environment variable name
 
 ### Model Not Found
 
 - Verify the model name in your profile is correct
-- Check available models on the [KiloAPI pricing page](https://kiosapi.com/pricing)
+- Check available models on the [KiosAPI pricing page](https://kiosapi.com/pricing)
 
 ### Connection Error
 
@@ -173,6 +173,6 @@ codex "Say hello"
 
 ## Need Help?
 
-- [KiloAPI Dashboard](https://kiosapi.com)
+- [KiosAPI Dashboard](https://kiosapi.com)
 - [Token Management Guide](/token-management/usage)
 - [Available Models](../api-reference/models/list-models)

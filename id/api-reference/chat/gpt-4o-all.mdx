@@ -1,0 +1,111 @@
+---
+title: Obrolan - Analisis File gpt-4o-all
+description: Analisis file dan gambar dengan model gpt-4o-all
+---
+
+# Obrolan - Analisis File gpt-4o-all
+
+`gpt-4o-all` mendukung analisis gambar, analisis file, dan kemampuan penelusuran web (berdasarkan inti model gpt-4o).
+
+## Fitur
+
+- **Analisis Gambar**: Teruskan URL gambar langsung di `content` untuk menganalisisnya
+- **Analisis File**: Meneruskan URL file langsung dalam `content` dengan format: `file_url + space + question`
+- **Penjelajahan Web**: Kemampuan pencarian web bawaan
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/chat/completions" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|`gpt-4o-all`|
+|`messages`|array|Ya|Array objek pesan|
+|`messages[].role`|string|Ya|Peran: `system` atau `user`|
+|`messages[].content`|string|Ya|Pertanyaan (dapat menyertakan URL file + spasi + pertanyaan)|
+|`temperature`|number| Tidak |Suhu pengambilan sampel (0-2)|
+|`stream`|boolean| Tidak |Aktifkan streaming|
+|`max_tokens`|number| Tidak |Token maksimum untuk dihasilkan|
+
+### Contoh Permintaan - Analisis File
+
+```bash
+curl https://kiosapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gpt-4o-all",
+    "messages": [
+      {
+        "role": "user",
+        "content": "https://example.com/api-doc.pdf What is the API for adding a domain?"
+      }
+    ],
+    "max_tokens": 1688,
+    "temperature": 0.5,
+    "stream": false
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.chat.completions.create(
+    model="gpt-4o-all",
+    messages=[
+        {
+            "role": "user",
+            "content": "https://example.com/api-doc.pdf What is the API for adding a domain?"
+        }
+    ],
+    max_tokens=1688,
+    temperature=0.5,
+    stream=False
+)
+
+print(response.choices[0].message.content)
+```
+
+<Tip>
+Untuk analisis file, formatnya adalah: URL file + spasi + pertanyaan Anda. Model akan mengunduh dan menganalisis file tersebut, lalu menjawab pertanyaan Anda berdasarkan kontennya.
+</Tip>
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-EqJ6TxTZRW1sUgfFTbATPumIFWzCi",
+  "object": "chat.completion",
+  "created": 1724997805,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Based on the document, the API for adding a domain is..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 13,
+    "completion_tokens": 292,
+    "total_tokens": 305
+  }
+}
+```

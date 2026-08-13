@@ -1,16 +1,16 @@
 ---
 title: Gemini CLI
-description: Set up Google's Gemini CLI to use KiloAPI as the backend provider.
+description: Set up Google's Gemini CLI to use KiosAPI as the backend provider.
 ---
 
 # Gemini CLI
 
-[Gemini CLI](https://github.com/google-gemini/gemini-cli) is Google's official command-line interface for interacting with Gemini models. This guide shows you how to configure it to use KiloAPI.
+[Gemini CLI](https://github.com/google-gemini/gemini-cli) is Google's official command-line interface for interacting with Gemini models. This guide shows you how to configure it to use KiosAPI.
 
 ## Prerequisites
 
 - **Node.js 18+** — check with `node --version`
-- A **KiloAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
+- A **KiosAPI API key** (starts with `sk-`) from the [Dashboard](https://kiosapi.com) → **Token Management**
 
 ## Installation
 
@@ -28,7 +28,7 @@ gemini --version
 
 ## Get Your API Key
 
-1. Log in to the [KiloAPI Dashboard](https://kiosapi.com)
+1. Log in to the [KiosAPI Dashboard](https://kiosapi.com)
 2. Navigate to **Token Management**
 3. Create or copy an existing API key (starts with `sk-`)
 
@@ -75,7 +75,7 @@ Create `~/.gemini/settings.json`:
 
 | Setting | Description |
 |---------|-------------|
-| `auth.selectedType` | Authentication method — set to `api-key` for KiloAPI |
+| `auth.selectedType` | Authentication method — set to `api-key` for KiosAPI |
 | `model` | Default model to use |
 | `models` | Model definitions with display names and base URLs |
 
@@ -90,11 +90,11 @@ gemini
 On first launch, Gemini CLI will prompt you to select an authentication method:
 
 1. Select **API Key**
-2. Enter your KiloAPI key (`sk-xxx`)
+2. Enter your KiosAPI key (`sk-xxx`)
 3. Press Enter to confirm
 
 <Warning>
-  Do **not** select "Google Login" — this will attempt to authenticate with Google's servers directly and will not work with KiloAPI. Always choose **API Key**.
+  Do **not** select "Google Login" — this will attempt to authenticate with Google's servers directly and will not work with KiosAPI. Always choose **API Key**.
 </Warning>
 
 ## Usage
@@ -144,7 +144,7 @@ gemini --model gemini-2.5-flash "Summarize this article"
 | `gemini-2.5-flash-lite` | Ultra-fast lightweight model |
 
 <Tip>
-  Check the [KiloAPI pricing page](https://kiosapi.com/pricing) for the full list of available Gemini models and their costs.
+  Check the [KiosAPI pricing page](https://kiosapi.com/pricing) for the full list of available Gemini models and their costs.
 </Tip>
 
 ## Troubleshooting
@@ -164,7 +164,7 @@ gemini --model gemini-2.5-flash "Summarize this article"
 ### Model Not Found
 
 - Check the model ID matches exactly (e.g., `gemini-2.5-pro`, not `gemini-pro`)
-- Confirm the model is available on KiloAPI by checking the [models list](../api-reference/models/list-models)
+- Confirm the model is available on KiosAPI by checking the [models list](../api-reference/models/list-models)
 
 ## Verify Your Setup
 
@@ -174,6 +174,6 @@ gemini "Say hello"
 
 ## Need Help?
 
-- [KiloAPI Dashboard](https://kiosapi.com)
+- [KiosAPI Dashboard](https://kiosapi.com)
 - [Token Management Guide](/token-management/usage)
 - [Available Models](../api-reference/models/list-models)

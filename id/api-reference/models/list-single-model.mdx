@@ -1,0 +1,60 @@
+---
+title: Daftar Model Tunggal
+description: Ambil detail model tertentu
+---
+
+# Daftar Model Tunggal
+
+Ambil informasi tentang model spesifik yang tersedia untuk kunci API Anda.
+
+## Permintaan
+
+<Method method="GET" url="https://kiosapi.com/v1/models/{model}" />
+
+### Parameter Jalur
+
+|Parameter|Wajib|Deskripsi|Contoh|
+|-----------|----------|-------------|---------|
+|`model`|Ya|Nama model|`gemini-2.0-flash`|
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`| No* |`Bearer sk-xxx` (format OpenAI)|
+|`x-api-key`| No* |`sk-xxx` (Format antropik)|
+|`anthropic-version`| No* |`2023-06-01` (Format antropik)|
+|`x-goog-api-key`| No* |`sk-xxx` (format Google)|
+
+<Info>
+*Setidaknya diperlukan satu metode autentikasi.
+</Info>
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/models/gemini-2.0-flash \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json"
+```
+
+## Respons
+
+```json
+{
+  "id": "gemini-2.0-flash",
+  "object": "model",
+  "created": 1686935002,
+  "owned_by": "google"
+}
+```
+
+### Skema Respons
+
+|Bidang|Tipe|Deskripsi|
+|-------|------|-------------|
+|`id`|string|Nama/ID model|
+|`object`|string|Selalu `model`|
+|`created`|integer|Stempel waktu Unix|
+|`owned_by`|string|Penyedia model|

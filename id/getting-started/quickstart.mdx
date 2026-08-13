@@ -1,0 +1,81 @@
+---
+title: Quickstart
+description: Kirim permintaan pertama ke KiosAPI menggunakan OpenAI SDK.
+---
+
+# Quickstart
+
+Panduan ini menunjukkan alur minimum untuk mengirim chat completion melalui OpenAI SDK.
+
+## Prasyarat
+
+- Akun KiosAPI dan API key.
+- Python atau Node.js.
+- API key disimpan dalam environment variable `KIOSAPI_API_KEY`.
+
+## Python
+
+Instal SDK:
+
+```bash
+pip install openai
+```
+
+Buat file Python:
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["KIOSAPI_API_KEY"],
+    base_url="https://kiosapi.com/v1/",
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "Anda adalah asisten yang membantu."},
+        {"role": "user", "content": "Halo, apa yang bisa Anda bantu?"},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Node.js
+
+Instal SDK:
+
+```bash
+npm install openai
+```
+
+Buat file JavaScript atau module Node.js:
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.KIOSAPI_API_KEY,
+  baseURL: "https://kiosapi.com/v1/",
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o-mini",
+  messages: [
+    { role: "system", content: "Anda adalah asisten yang membantu." },
+    { role: "user", content: "Halo, apa yang bisa Anda bantu?" },
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+Nama model pada contoh harus diganti jika model tersebut tidak tersedia untuk akun Anda.
+
+## Setelah berhasil
+
+- [OpenAI SDK](./openai-sdk) — konfigurasi client, streaming, dan model.
+- [Concurrency](./concurrency) — jalankan beberapa permintaan secara asinkron dengan batas yang terukur.
+- [Autentikasi](../authentication) — gunakan header untuk endpoint native.

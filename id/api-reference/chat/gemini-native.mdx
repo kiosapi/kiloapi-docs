@@ -1,0 +1,132 @@
+---
+title: Gemini (Format Asli) - Analisis File
+description: Gunakan model Gemini melalui format asli Google
+---
+
+# Gemini (Format Asli) - Analisis File
+
+Format permintaan asli Gemini menggunakan struktur Google API. Platform ini mendukung nama parameter Snake_case dan CamelCase, namun **camelCase direkomendasikan** untuk konsistensi.
+
+<Tip>
+Gunakan camelCase untuk semua parameter (misalnya `toolConfig` ✅, `tool_config` ❌). Beberapa parameter mungkin tidak dikenali dengan Snake_case.
+</Tip>
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1beta/models/{model}:{action}" />
+
+### Parameter Jalur
+
+|Parameter|Wajib|Deskripsi|Contoh|
+|-----------|----------|-------------|---------|
+|`model`|Ya|Nama model|`gemini-2.5-flash`|
+|`action`|Ya|Jenis tindakan|`generateContent` atau `streamGenerateContent?alt=sse`|
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`x-goog-api-key`| No* |`sk-xxx` (atau gunakan `Authorization: Bearer sk-xxx`)|
+
+<Info>
+Anda dapat mengautentikasi dengan header `x-goog-api-key` atau header `Authorization: Bearer`.
+</Info>
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`contents`|array|Ya|Array objek konten|
+|`contents[].role`|string|Ya|Peran: `user` atau `model`|
+|`contents[].parts`|array|Ya|Array objek bagian|
+|`contents[].parts[].text`|string| Tidak |Konten teks|
+
+### Contoh Permintaan - Non-streaming
+
+```bash
+curl -X POST "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: sk-xxx" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {"text": "How are you?"}
+        ]
+      }
+    ]
+  }'
+```
+
+### Contoh Permintaan - Streaming
+
+```bash
+curl -X POST "https://kiosapi.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: sk-xxx" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {"text": "How are you?"}
+        ]
+      }
+    ]
+  }'
+```
+
+### Contoh Python
+
+```python
+import requests
+
+url = "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent"
+headers = {
+    "Content-Type": "application/json",
+    "x-goog-api-key": "sk-xxx"
+}
+data = {
+    "contents": [
+        {
+            "role": "user",
+            "parts": [{"text": "How are you?"}]
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+print(result["choices"][0]["message"]["content"])
+```
+
+## Respons
+
+```json
+{
+  "id": "chatcmpl-xxx",
+  "object": "chat.completion",
+  "created": 1724972230,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking! How can I help you today?"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 5,
+    "completion_tokens": 15,
+    "total_tokens": 20
+  }
+}
+```
+
+<Info>
+Untuk detail parameter lengkap dan contoh penggunaan, lihat [dokumentasi resmi Gemini](https://ai.google.dev/models/gemini).
+</Info>

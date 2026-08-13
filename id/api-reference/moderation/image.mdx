@@ -1,0 +1,105 @@
+---
+title: Moderasi Gambar
+description: Periksa konten gambar untuk mengetahui NSFW/pelanggaran kebijakan
+---
+
+# Moderasi Gambar
+
+Periksa apakah konten gambar NSFW atau melanggar kebijakan konten.
+
+## Permintaan
+
+<Method method="POST" url="https://kiosapi.com/v1/moderations" />
+
+### Header
+
+|Header|Wajib|Deskripsi|
+|--------|----------|-------------|
+|`Content-Type`|Ya|`application/json`|
+|`Authorization`|Ya|`Bearer sk-xxx`|
+
+### Badan Permintaan
+
+|Parameter|Tipe|Wajib|Deskripsi|
+|-----------|------|----------|-------------|
+|`model`|string|Ya|`gi-image-moderation`|
+|`input`|array|Ya|Array objek gambar|
+|`input[].type`|string|Ya|Harus `image_url`|
+|`input[].image_url.url`|string|Ya|URL gambar atau base64|
+
+### Contoh Permintaan
+
+```bash
+curl https://kiosapi.com/v1/moderations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxx" \
+  -d '{
+    "model": "gi-image-moderation",
+    "input": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "https://example.com/image.png"
+        }
+      }
+    ]
+  }'
+```
+
+### Contoh Python
+
+```python
+import openai
+
+openai.api_key = "sk-xxx"
+openai.base_url = "https://kiosapi.com/v1/"
+
+response = openai.moderations.create(
+    model="gi-image-moderation",
+    input=[{
+        "type": "image_url",
+        "image_url": {"url": "https://example.com/image.png"}
+    }]
+)
+
+print(response.results[0].flagged)
+print(response.results[0].categories)
+```
+
+## Respons
+
+```json
+{
+  "id": "abfc99e9-392e-44e3-aedd-e63f33079491",
+  "model": "nsfw-classifier",
+  "results": [
+    {
+      "flagged": false,
+      "categories": {
+        "neutral": false,
+        "drawings": true,
+        "sexy": false,
+        "hentai": false,
+        "porn": false
+      },
+      "category_scores": {
+        "neutral": 0.2273,
+        "drawings": 0.9944,
+        "sexy": 0.1233,
+        "hentai": 0.2199,
+        "porn": 0.0557
+      }
+    }
+  ]
+}
+```
+
+### Bidang Kategori
+
+|Kategori|Deskripsi|
+|----------|-------------|
+|`neutral`|Tidak ada konten seksual|
+|`drawings`|Gambar normal, sedikit kemungkinan seksual|
+|`sexy`|Konten seksi/provokatif|
+|`hentai`|Konten anime dewasa|
+|`porn`|Konten seksual eksplisit|

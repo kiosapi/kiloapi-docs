@@ -1,11 +1,11 @@
 ---
 title: API Base URL
-description: The KiloAPI base URL and how to configure it correctly with your API key.
+description: The KiosAPI base URL and how to configure it correctly with your API key.
 ---
 
 # API Base URL
 
-The KiloAPI base URL is:
+The KiosAPI base URL is:
 
 ```
 https://kiosapi.com/v1/
@@ -41,7 +41,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://kiosapi.com/v1/",
-    api_key="sk-kilo-xxxxxxxxxxxx"
+    api_key="sk-kioo-xxxxxxxxxxxx"
 )
 
 response = client.chat.completions.create(
@@ -57,7 +57,7 @@ import OpenAI from "openai";
 
 const client = new OpenAI({
   baseURL: "https://kiosapi.com/v1/",
-  apiKey: "sk-kilo-xxxxxxxxxxxx",
+  apiKey: "sk-kioo-xxxxxxxxxxxx",
 });
 
 const response = await client.chat.completions.create({
@@ -73,7 +73,7 @@ import anthropic
 
 client = anthropic.Anthropic(
     base_url="https://kiosapi.com/v1/",
-    api_key="sk-kilo-xxxxxxxxxxxx"
+    api_key="sk-kioo-xxxxxxxxxxxx"
 )
 
 message = client.messages.create(
@@ -86,11 +86,11 @@ message = client.messages.create(
 <Warning title="Bind the correct API URL and KEY">
   A very common mistake is mixing up the **base URL** and **API key**. Here's the rule:
 
-  - ✅ **KiloAPI key** → `https://kiosapi.com/v1/`
-  - ❌ KiloAPI key → `https://api.openai.com/v1/` (will fail)
+  - ✅ **KiosAPI key** → `https://kiosapi.com/v1/`
+  - ❌ KiosAPI key → `https://api.openai.com/v1/` (will fail)
   - ❌ OpenAI key → `https://kiosapi.com/v1/` (will fail)
 
-  Your KiloAPI key only works with the KiloAPI base URL. Double-check both values in your dashboard before debugging authentication errors.
+  Your KiosAPI key only works with the KiosAPI base URL. Double-check both values in your dashboard before debugging authentication errors.
 </Warning>
 
 ## Environment Variable
@@ -99,10 +99,10 @@ You can also set the base URL via an environment variable to avoid hardcoding it
 
 ```bash
 # .env
-KILOAPI_BASE_URL=https://kiosapi.com/v1/
-KILOAPI_API_KEY=sk-kilo-xxxxxxxxxxxx
+KIOSAPI_BASE_URL=https://kiosapi.com/v1/
+KIOSAPI_API_KEY=sk-kioo-xxxxxxxxxxxx
 ```
 
 <Info title="Why a separate base URL?">
-  KiloAPI is designed as a drop-in replacement for OpenAI, Claude, and Gemini APIs. By setting the base URL to `kiosapi.com`, you can use any existing OpenAI-compatible SDK without changing your application logic — just swap the URL and key.
+  KiosAPI is designed as a drop-in replacement for OpenAI, Claude, and Gemini APIs. By setting the base URL to `kiosapi.com`, you can use any existing OpenAI-compatible SDK without changing your application logic — just swap the URL and key.
 </Info>

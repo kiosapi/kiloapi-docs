@@ -1,0 +1,62 @@
+---
+title: Autentikasi
+description: Gunakan API key KiosAPI pada endpoint OpenAI, Claude, dan Gemini.
+---
+
+# Autentikasi
+
+Permintaan ke KiosAPI memerlukan API key. Simpan key sebagai secret dan kirim header yang sesuai dengan endpoint yang dipanggil.
+
+## OpenAI-compatible API
+
+Gunakan `Authorization: Bearer` untuk endpoint di bawah `/v1`, seperti `/v1/chat/completions` dan `/v1/responses`:
+
+```bash
+curl "https://kiosapi.com/v1/chat/completions" \
+  -H "Authorization: Bearer ${KIOSAPI_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Halo!"}]}'
+```
+
+## Claude native API
+
+Endpoint `/v1/messages` menggunakan header `x-api-key`. Sertakan `anthropic-version` sesuai format Anthropic yang digunakan aplikasi Anda:
+
+```bash
+curl "https://kiosapi.com/v1/messages" \
+  -H "x-api-key: ${KIOSAPI_API_KEY}" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 1024,
+    "messages": [{"role":"user","content":"Halo!"}]
+  }'
+```
+
+## Gemini native API
+
+Endpoint Gemini menggunakan `/v1beta/models/{model}:generateContent` dan header `x-goog-api-key`:
+
+```bash
+curl "https://kiosapi.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: ${KIOSAPI_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"contents":[{"parts":[{"text":"Halo!"}]}]}'
+```
+
+## Ringkasan header
+
+| Endpoint | Header autentikasi |
+|---|---|
+| `/v1/chat/completions` dan `/v1/responses` | `Authorization: Bearer <API_KEY>` |
+| `/v1/messages` | `x-api-key: <API_KEY>` dan `anthropic-version` |
+| `/v1beta/models/{model}:generateContent` | `x-goog-api-key: <API_KEY>` |
+
+<Warning title="Jangan mencampur key dan endpoint">
+  Gunakan API key KiosAPI dengan host `kiosapi.com`. Jangan kirim key ke repository publik, kode frontend, atau log. Header yang salah dapat menyebabkan `401 Unauthorized`.
+</Warning>
+
+## Mendapatkan API key
+
+Masuk ke [kiosapi.com](https://kiosapi.com), lalu buka bagian pengelolaan token/API key di dashboard untuk membuat atau menyalin key.
